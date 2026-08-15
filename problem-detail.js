@@ -50,12 +50,28 @@
     font-family: system-ui, sans-serif;
     background: #ffffff;
   }
-  .demo-card { text-align: center; }
+  .demo-card { text-align: center; min-width: 240px; }
   .demo-card h1 {
     font-size: 22px;
     margin: 0 0 16px;
     color: #1a1f2b;
     transition: color .2s ease;
+  }
+  .demo-card p {
+    font-size: 15px;
+    color: #33394a;
+    margin: 10px 0;
+  }
+  .demo-card label {
+    font-size: 14px;
+    color: #33394a;
+  }
+  .demo-card input[type="text"] {
+    font-size: 14px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #d8dce4;
+    margin-bottom: 4px;
   }
   .demo-card button {
     font-size: 14px;
@@ -64,6 +80,21 @@
     border: 1px solid #d8dce4;
     background: #f4f5f7;
     cursor: pointer;
+    margin-left: 6px;
+  }
+  .demo-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 14px 0 0;
+    text-align: left;
+    display: inline-block;
+    min-width: 160px;
+  }
+  .demo-card li {
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #1a1f2b;
   }
 </style>
 `;
