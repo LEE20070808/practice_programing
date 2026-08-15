@@ -9,12 +9,20 @@
   }
 
   // ざっくりしたシンタックスハイライト（タグ名・属性名・文字列に色付け）
+  // タグ単位でまとめて処理することで、挿入したspanタグ自体に誤って
+  // 色付け処理がかからないようにしている
   function highlightHtml(rawHtml) {
     const escaped = escapeHtml(rawHtml);
-    return escaped
-      .replace(/(&lt;\/?)([a-zA-Z0-9]+)/g, '$1<span class="tag">$2</span>')
-      .replace(/([a-zA-Z-]+)=(&quot;|")([^"]*)(&quot;|")/g, '<span class="attr">$1</span>=<span class="str">"$3"</span>')
-      .replace(/=&quot;([^&]*)&quot;/g, '="<span class="str">$1</span>"');
+    const tagPattern = /(&lt;\/?)([a-zA-Z0-9]+)((?:\s+[a-zA-Z-]+="[^"]*")*)(\s*\/?&gt;)/g;
+    const attrPattern = /([a-zA-Z-]+)="([^"]*)"/g;
+
+    return escaped.replace(tagPattern, (match, open, tagName, attrs, close) => {
+      const highlightedAttrs = attrs.replace(
+        attrPattern,
+        '<span class="attr">$1</span>=<span class="str">"$2"</span>'
+      );
+      return `${open}<span class="tag">${tagName}</span>${highlightedAttrs}${close}`;
+    });
   }
 
   const params = new URLSearchParams(window.location.search);
