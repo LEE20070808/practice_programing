@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ホーム | CodeDrill</title>
+<title>プロブレム一覧 | CodeDrill</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -32,8 +32,8 @@
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">navigation</div>
   <nav>
-    <a href="index.html" class="active"><span class="prompt">$</span> home</a>
-    <a href="problem-list.html"><span class="prompt">$</span> problem</a>
+    <a href="index.html"><span class="prompt">$</span> home</a>
+    <a href="problem-list.html" class="active"><span class="prompt">$</span> problem</a>
     <a href="#"><span class="prompt">$</span> history</a>
     <a href="#"><span class="prompt">$</span> settings</a>
   </nav>
@@ -42,23 +42,18 @@
 <div class="page">
   <div class="container">
     <div class="page-heading">
-      <h1>ホーム</h1>
-      <p>学習状況とおすすめの問題がここに表示されます。</p>
+      <h1>プロブレム一覧</h1>
+      <p>取り組みたい問題を選んでください。</p>
     </div>
 
-    <section class="panel">
-      <h2>あなたに関連がある問題</h2>
-      <div class="empty-state">
-        <p class="terminal-line">&gt; no_related_problems<span class="cursor">_</span></p>
-        <p class="empty-sub">
-          まだあなた向けの問題がありません。<br>
-          いくつか問題に取り組むと、ここに関連する問題が表示されるようになります。
-        </p>
-      </div>
-    </section>
+    <div class="problem-grid" id="problemGrid">
+      <!-- カードはJSで生成されます -->
+    </div>
   </div>
 </div>
 
+<script src="problems-data.js"></script>
 <script src="app.js"></script>
+<script src="problem-list.js"></script>
 </body>
 </html>

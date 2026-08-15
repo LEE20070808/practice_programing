@@ -323,6 +323,109 @@ button {
 
 /* ---------- Responsive ---------- */
 
+/* ---------- Problem list ---------- */
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.problem-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.problem-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.card-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .03em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.badge-tag {
+  color: var(--mint);
+  background: var(--mint-soft);
+  border-color: rgba(95, 217, 164, 0.3);
+}
+
+.badge-diff-初級 {
+  color: var(--text-muted);
+  background: var(--panel-alt);
+  border-color: var(--border);
+}
+
+.badge-diff-中級 {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  border-color: rgba(242, 169, 80, 0.3);
+}
+
+.badge-diff-上級 {
+  color: var(--danger);
+  background: rgba(232, 96, 122, 0.12);
+  border-color: rgba(232, 96, 122, 0.3);
+}
+
+.problem-card h3 {
+  font-size: 15.5px;
+  margin: 0 0 8px;
+}
+
+.problem-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+  flex: 1;
+}
+
+.card-link {
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.problem-card:hover .card-link { color: var(--accent-strong); }
+
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  transition: color .15s ease;
+}
+
+.breadcrumb:hover { color: var(--accent); }
+
 /* ---------- Problem page ---------- */
 
 .problem-layout {
