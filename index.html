@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ホーム | CodeDrill</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">Code<strong>Drill</strong></div>
+  </div>
+  <div class="topbar-right">
+    <span class="datetime" id="datetime"></span>
+    <span class="streak">day_streak: <strong>07</strong></span>
+    <div class="avatar" title="ユーザー">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">navigation</div>
+  <nav>
+    <a href="index.html" class="active"><span class="prompt">$</span> home</a>
+    <a href="problem.html"><span class="prompt">$</span> problem</a>
+    <a href="#"><span class="prompt">$</span> history</a>
+    <a href="#"><span class="prompt">$</span> settings</a>
+  </nav>
+</aside>
+
+<div class="page">
+  <div class="container">
+    <div class="page-heading">
+      <h1>ホーム</h1>
+      <p>学習状況とおすすめの問題がここに表示されます。</p>
+    </div>
+
+    <section class="panel">
+      <h2>あなたに関連がある問題</h2>
+      <div class="empty-state">
+        <p class="terminal-line">&gt; no_related_problems<span class="cursor">_</span></p>
+        <p class="empty-sub">
+          まだあなた向けの問題がありません。<br>
+          いくつか問題に取り組むと、ここに関連する問題が表示されるようになります。
+        </p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
