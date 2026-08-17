@@ -30,7 +30,7 @@ app.use(session({
   }
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // フロントに渡してよい設定値（Client IDは公開情報なので問題ない）
 app.get('/api/config', (req, res) => {
