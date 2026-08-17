@@ -32,7 +32,8 @@
 
     google.accounts.id.initialize({
       client_id: googleClientId,
-      callback: handleCredentialResponse
+      callback: handleCredentialResponse,
+      use_fedcm_for_button: true
     });
     google.accounts.id.renderButton(target, {
       theme: 'filled_black',
