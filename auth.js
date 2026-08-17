@@ -30,10 +30,12 @@
     const target = document.getElementById('googleSignInDiv');
     if (!target) return;
 
+    console.log('[CodeDrill] Google初期化開始 client_id:', googleClientId);
     google.accounts.id.initialize({
       client_id: googleClientId,
       callback: handleCredentialResponse,
-      use_fedcm_for_button: true
+      use_fedcm_for_button: true,
+      log_level: 'debug'
     });
     google.accounts.id.renderButton(target, {
       theme: 'filled_black',
@@ -44,6 +46,7 @@
   }
 
   function handleCredentialResponse(response) {
+    console.log('[CodeDrill] Googleからの応答を受信:', response);
     fetch('/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -51,8 +54,11 @@
       body: JSON.stringify({ credential: response.credential })
     })
       .then((r) => r.json())
-      .then(() => location.reload())
-      .catch((err) => console.error('ログインに失敗しました', err));
+      .then((data) => {
+        console.log('[CodeDrill] サーバー応答:', data);
+        location.reload();
+      })
+      .catch((err) => console.error('[CodeDrill] ログインに失敗しました', err));
   }
 
   document.addEventListener('DOMContentLoaded', () => {
