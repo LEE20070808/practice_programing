@@ -156,6 +156,47 @@ button {
 
 .avatar svg { width: 18px; height: 18px; }
 
+/* ---------- Auth (Googleログイン) ---------- */
+
+.auth-area {
+  display: flex;
+  align-items: center;
+}
+
+#googleSignInDiv {
+  line-height: 0;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  object-fit: cover;
+}
+
+.logout-btn {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 999px;
+  transition: border-color .15s ease, color .15s ease;
+}
+
+.logout-btn:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
 /* ---------- Sidebar ---------- */
 
 .overlay {

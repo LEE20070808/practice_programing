@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>プロブレム | CodeDrill</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -17,13 +18,8 @@
   </div>
   <div class="topbar-right">
     <span class="datetime" id="datetime"></span>
-    <span class="streak">day_streak: <strong>07</strong></span>
-    <div class="avatar" title="ユーザー">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="8" r="4"></circle>
-        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-      </svg>
-    </div>
+    <span class="streak">day_streak: <strong id="streakValue">--</strong></span>
+    <div id="authArea" class="auth-area"></div>
   </div>
 </header>
 
@@ -69,6 +65,7 @@
 
 <script src="problems-data.js"></script>
 <script src="app.js"></script>
+<script src="auth.js"></script>
 <script src="problem-detail.js"></script>
 </body>
 </html>
