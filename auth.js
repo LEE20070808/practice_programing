@@ -1,11 +1,8 @@
-// ログイン状態の表示切り替え（Googleログインボタン ⇔ ユーザーアイコン）
+// ログイン状態の表示切り替え（Googleログインリンク ⇔ ユーザーアイコン）
 
 (function () {
-  let googleClientId = null;
-
   function renderLoggedOut(container) {
-    container.innerHTML = '<div id="googleSignInDiv"></div>';
-    tryRenderGoogleButton();
+    container.innerHTML = '<a href="/auth/google" class="google-login-btn">Googleでログイン</a>';
   }
 
   function renderLoggedIn(container, user) {
@@ -21,57 +18,12 @@
     });
   }
 
-  function tryRenderGoogleButton() {
-    if (!googleClientId) return;
-    if (typeof google === 'undefined' || !google.accounts) {
-      setTimeout(tryRenderGoogleButton, 200);
-      return;
-    }
-    const target = document.getElementById('googleSignInDiv');
-    if (!target) return;
-
-    console.log('[CodeDrill] Google初期化開始 client_id:', googleClientId);
-    google.accounts.id.initialize({
-      client_id: googleClientId,
-      callback: handleCredentialResponse,
-      use_fedcm_for_button: true,
-      log_level: 'debug'
-    });
-    google.accounts.id.renderButton(target, {
-      theme: 'filled_black',
-      size: 'medium',
-      shape: 'pill',
-      text: 'signin'
-    });
-  }
-
-  function handleCredentialResponse(response) {
-    console.log('[CodeDrill] Googleからの応答を受信:', response);
-    fetch('/api/auth/google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ credential: response.credential })
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        console.log('[CodeDrill] サーバー応答:', data);
-        location.reload();
-      })
-      .catch((err) => console.error('[CodeDrill] ログインに失敗しました', err));
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     const authArea = document.getElementById('authArea');
     if (!authArea) return;
 
-    fetch('/api/config')
+    fetch('/api/me', { credentials: 'include' })
       .then((r) => r.json())
-      .then((cfg) => {
-        googleClientId = cfg.googleClientId;
-
-        return fetch('/api/me', { credentials: 'include' }).then((r) => r.json());
-      })
       .then((data) => {
         const user = data.user;
         const streakEl = document.getElementById('streakValue');

@@ -167,6 +167,22 @@ button {
   line-height: 0;
 }
 
+.google-login-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1206;
+  background: var(--accent);
+  padding: 8px 16px;
+  border-radius: 999px;
+  display: inline-block;
+  transition: background .15s ease;
+}
+
+.google-login-btn:hover {
+  background: var(--accent-strong);
+}
+
 .user-menu {
   display: flex;
   align-items: center;

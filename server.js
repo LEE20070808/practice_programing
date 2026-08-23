@@ -9,12 +9,17 @@ const db = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI; // 例: https://xxxx.onrender.com/auth/google/callback
 
-if (!GOOGLE_CLIENT_ID) {
-  console.warn('警告: GOOGLE_CLIENT_ID が設定されていません。.envを確認してください。');
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REDIRECT_URI) {
+  console.warn('警告: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI のいずれかが未設定です。.envまたはRenderの環境変数を確認してください。');
 }
 
-const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+
+// Renderのプロキシ経由でも req.protocol が https と正しく判定されるようにする
+app.set('trust proxy', 1);
 
 app.use(express.json());
 
@@ -32,21 +37,26 @@ app.use(session({
 
 app.use(express.static(__dirname));
 
-// フロントに渡してよい設定値（Client IDは公開情報なので問題ない）
-app.get('/api/config', (req, res) => {
-  res.json({ googleClientId: GOOGLE_CLIENT_ID });
+// Googleのログインページへリダイレクトする
+app.get('/auth/google', (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    scope: ['openid', 'email', 'profile'],
+    prompt: 'select_account'
+  });
+  res.redirect(url);
 });
 
-// Googleから受け取ったIDトークンをサーバー側で検証し、ログイン状態を作る
-app.post('/api/auth/google', async (req, res) => {
-  const { credential } = req.body;
-  if (!credential) {
-    return res.status(400).json({ error: 'credential is required' });
+// Googleからのリダイレクト先。認可コードをトークンに交換してログイン状態を作る
+app.get('/auth/google/callback', async (req, res) => {
+  const { code } = req.query;
+  if (!code) {
+    return res.redirect('/?login=failed');
   }
 
   try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
+    const { tokens } = await oauth2Client.getToken(code);
+    const ticket = await oauth2Client.verifyIdToken({
+      idToken: tokens.id_token,
       audience: GOOGLE_CLIENT_ID
     });
     const payload = ticket.getPayload();
@@ -59,10 +69,10 @@ app.post('/api/auth/google', async (req, res) => {
     });
 
     req.session.userId = user.id;
-    res.json({ user: db.publicUser(user) });
+    res.redirect('/');
   } catch (err) {
     console.error('Google認証エラー:', err);
-    res.status(401).json({ error: 'Googleログインの検証に失敗しました' });
+    res.redirect('/?login=failed');
   }
 });
 
