@@ -19,6 +19,16 @@ db.exec(`
   )
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS solved_problems (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    problem_id INTEGER NOT NULL,
+    solved_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(user_id, problem_id)
+  )
+`);
+
 function todayStr() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
@@ -68,4 +78,36 @@ function publicUser(user) {
   };
 }
 
-module.exports = { upsertUser, getUserById, publicUser };
+// 問題を正解したときに記録する。同じ問題を再度解いても solved_at が
+// 更新されるだけで、行が重複することはない（UNIQUE制約）。
+function markSolved(userId, problemId) {
+  db.prepare(`
+    INSERT INTO solved_problems (user_id, problem_id, solved_at)
+    VALUES (?, ?, datetime('now'))
+    ON CONFLICT(user_id, problem_id) DO UPDATE SET solved_at = excluded.solved_at
+  `).run(userId, problemId);
+}
+
+// バッジ表示用: 解いた問題IDの一覧だけを返す
+function getSolvedProblemIds(userId) {
+  const rows = db.prepare('SELECT problem_id FROM solved_problems WHERE user_id = ?').all(userId);
+  return rows.map((r) => r.problem_id);
+}
+
+// 履歴ページ用: 解いた日時つきで新しい順に返す
+function getSolvedHistory(userId) {
+  return db.prepare(`
+    SELECT problem_id, solved_at FROM solved_problems
+    WHERE user_id = ?
+    ORDER BY solved_at DESC
+  `).all(userId);
+}
+
+module.exports = {
+  upsertUser,
+  getUserById,
+  publicUser,
+  markSolved,
+  getSolvedProblemIds,
+  getSolvedHistory
+};

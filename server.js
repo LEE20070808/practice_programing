@@ -85,6 +85,35 @@ app.get('/api/me', (req, res) => {
   res.json({ user: user ? db.publicUser(user) : null });
 });
 
+// 問題に正解したときに記録する（未ログインなら何もしない）
+app.post('/api/problems/:id/solve', (req, res) => {
+  if (!req.session.userId) {
+    return res.json({ ok: false, reason: 'not_logged_in' });
+  }
+  const problemId = Number(req.params.id);
+  if (!problemId) {
+    return res.status(400).json({ ok: false, error: 'invalid problem id' });
+  }
+  db.markSolved(req.session.userId, problemId);
+  res.json({ ok: true });
+});
+
+// バッジ表示用: 自分が解いた問題IDの一覧
+app.get('/api/solved-ids', (req, res) => {
+  if (!req.session.userId) {
+    return res.json({ solvedIds: [] });
+  }
+  res.json({ solvedIds: db.getSolvedProblemIds(req.session.userId) });
+});
+
+// 履歴ページ用: 解いた日時つきの一覧
+app.get('/api/history', (req, res) => {
+  if (!req.session.userId) {
+    return res.json({ history: [] });
+  }
+  res.json({ history: db.getSolvedHistory(req.session.userId) });
+});
+
 // ログアウト
 app.post('/api/logout', (req, res) => {
   req.session.destroy(() => {

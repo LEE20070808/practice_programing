@@ -147,6 +147,7 @@ try {
 
   // iframeからの採点結果を受け取って表示する。ページ読み込み直後の
   // 自動実行では表示せず、「実行する」を押した後だけ結果を出す。
+  let alreadyMarkedSolved = false;
   window.addEventListener('message', (event) => {
     if (!event.data || event.data.type !== 'codedrill-test-result') return;
     if (!testResult || !hasRunManually) return;
@@ -156,6 +157,14 @@ try {
       testResult.classList.add('test-pass');
       testResult.classList.remove('test-fail');
       testResult.textContent = '✓ 正解！ ' + event.data.message;
+
+      if (!alreadyMarkedSolved) {
+        alreadyMarkedSolved = true;
+        fetch(`/api/problems/${problem.id}/solve`, {
+          method: 'POST',
+          credentials: 'include'
+        }).catch(() => {});
+      }
     } else {
       testResult.classList.add('test-fail');
       testResult.classList.remove('test-pass');
