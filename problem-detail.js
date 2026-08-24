@@ -107,11 +107,36 @@
 </style>
 `;
 
+  const testResult = document.getElementById('testResult');
+  let hasRunManually = false;
+
+  // 与えられたHTML + ユーザーのJS を実行したあと、問題ごとのテストを
+  // iframeの中で走らせて、結果をpostMessageで親ページに送ってもらう
   function runCode() {
     const userJs = textarea.value;
-    const doc = `<!DOCTYPE html><html><head>${PREVIEW_STYLE}</head><body>${problem.html}<script>${userJs}<\/script></body></html>`;
+    const testScript = problem.test || '';
+
+    const doc = `<!DOCTYPE html><html><head>${PREVIEW_STYLE}</head><body>${problem.html}
+<script>
+${userJs}
+<\/script>
+<script>
+${testScript}
+try {
+  if (typeof runTest === 'function') {
+    const result = runTest();
+    parent.postMessage({ type: 'codedrill-test-result', passed: !!result.passed, message: result.message || '' }, '*');
+  }
+} catch (err) {
+  parent.postMessage({ type: 'codedrill-test-result', passed: false, message: 'コードの実行中にエラーが発生しました: ' + err.message }, '*');
+}
+<\/script>
+</body></html>`;
 
     statusMsg.classList.remove('show', 'error');
+    if (testResult) {
+      testResult.classList.remove('show', 'test-pass', 'test-fail');
+    }
     frame.srcdoc = doc;
 
     frame.onload = () => {
@@ -120,6 +145,28 @@
     };
   }
 
-  runBtn.addEventListener('click', runCode);
+  // iframeからの採点結果を受け取って表示する。ページ読み込み直後の
+  // 自動実行では表示せず、「実行する」を押した後だけ結果を出す。
+  window.addEventListener('message', (event) => {
+    if (!event.data || event.data.type !== 'codedrill-test-result') return;
+    if (!testResult || !hasRunManually) return;
+
+    testResult.classList.add('show');
+    if (event.data.passed) {
+      testResult.classList.add('test-pass');
+      testResult.classList.remove('test-fail');
+      testResult.textContent = '✓ 正解！ ' + event.data.message;
+    } else {
+      testResult.classList.add('test-fail');
+      testResult.classList.remove('test-pass');
+      testResult.textContent = '✗ まだ正解ではありません。' + (event.data.message ? ' ' + event.data.message : '');
+    }
+  });
+
+  runBtn.addEventListener('click', () => {
+    hasRunManually = true;
+    runCode();
+  });
+
   runCode();
 })();

@@ -17,7 +17,20 @@ const PROBLEMS = [
       '</div>',
     starter:
       "// ここにコードを書いてください\n" +
-      "document.getElementById('colorBtn').addEventListener('click', () => {\n\n});"
+      "document.getElementById('colorBtn').addEventListener('click', () => {\n\n});",
+    test: `
+function runTest() {
+  const btn = document.getElementById('colorBtn');
+  const title = document.getElementById('title');
+  if (!btn || !title) return { passed: false, message: '必要な要素が見つかりません。' };
+  btn.click();
+  const color = getComputedStyle(title).color;
+  if (color === 'rgb(242, 169, 80)') {
+    return { passed: true, message: 'ボタンを押すと見出しの色が変わりました。' };
+  }
+  return { passed: false, message: '見出しの色が #f2a950 になっていません。' };
+}
+`
   },
   {
     id: 2,
@@ -36,7 +49,22 @@ const PROBLEMS = [
     starter:
       "// ここにコードを書いてください\n" +
       "let isOn = false;\n" +
-      "document.getElementById('toggleBtn').addEventListener('click', () => {\n\n});"
+      "document.getElementById('toggleBtn').addEventListener('click', () => {\n\n});",
+    test: `
+function runTest() {
+  const btn = document.getElementById('toggleBtn');
+  const status = document.getElementById('status');
+  if (!btn || !status) return { passed: false, message: '必要な要素が見つかりません。' };
+  btn.click();
+  const afterFirst = status.textContent.trim();
+  btn.click();
+  const afterSecond = status.textContent.trim();
+  if (afterFirst === 'オン' && afterSecond === 'オフ') {
+    return { passed: true, message: 'クリックのたびに正しく切り替わりました。' };
+  }
+  return { passed: false, message: '「オン」「オフ」の切り替えが正しくありません（1回目: ' + afterFirst + ' / 2回目: ' + afterSecond + '）。' };
+}
+`
   },
   {
     id: 3,
@@ -55,7 +83,22 @@ const PROBLEMS = [
     starter:
       "// ここにコードを書いてください\n" +
       "let count = 0;\n" +
-      "document.getElementById('countBtn').addEventListener('click', () => {\n\n});"
+      "document.getElementById('countBtn').addEventListener('click', () => {\n\n});",
+    test: `
+function runTest() {
+  const btn = document.getElementById('countBtn');
+  const count = document.getElementById('count');
+  if (!btn || !count) return { passed: false, message: '必要な要素が見つかりません。' };
+  btn.click();
+  btn.click();
+  btn.click();
+  const value = count.textContent.trim();
+  if (value === '3') {
+    return { passed: true, message: '3回クリックして「3」と表示されました。' };
+  }
+  return { passed: false, message: '3回クリック後の表示が「3」になっていません（現在: ' + value + '）。' };
+}
+`
   },
   {
     id: 4,
@@ -73,7 +116,21 @@ const PROBLEMS = [
       '</div>',
     starter:
       "// ここにコードを書いてください\n" +
-      "document.getElementById('nameInput').addEventListener('input', (e) => {\n\n});"
+      "document.getElementById('nameInput').addEventListener('input', (e) => {\n\n});",
+    test: `
+function runTest() {
+  const input = document.getElementById('nameInput');
+  const preview = document.getElementById('preview');
+  if (!input || !preview) return { passed: false, message: '必要な要素が見つかりません。' };
+  input.value = '太郎';
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  const text = preview.textContent.trim();
+  if (text === 'こんにちは、太郎さん') {
+    return { passed: true, message: '入力に合わせて正しく表示が変わりました。' };
+  }
+  return { passed: false, message: '表示が「こんにちは、太郎さん」になっていません（現在: ' + text + '）。' };
+}
+`
   },
   {
     id: 5,
@@ -91,7 +148,24 @@ const PROBLEMS = [
       '</div>',
     starter:
       "// ここにコードを書いてください\n" +
-      "document.getElementById('showToggle').addEventListener('change', (e) => {\n\n});"
+      "document.getElementById('showToggle').addEventListener('change', (e) => {\n\n});",
+    test: `
+function runTest() {
+  const checkbox = document.getElementById('showToggle');
+  const detail = document.getElementById('detail');
+  if (!checkbox || !detail) return { passed: false, message: '必要な要素が見つかりません。' };
+  checkbox.checked = true;
+  checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+  const shown = getComputedStyle(detail).display !== 'none';
+  checkbox.checked = false;
+  checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+  const hidden = getComputedStyle(detail).display === 'none';
+  if (shown && hidden) {
+    return { passed: true, message: 'チェックのオン・オフで表示が正しく切り替わりました。' };
+  }
+  return { passed: false, message: '表示・非表示の切り替えが正しくありません。' };
+}
+`
   },
   {
     id: 6,
@@ -111,6 +185,21 @@ const PROBLEMS = [
       '</div>',
     starter:
       "// ここにコードを書いてください\n" +
-      "document.getElementById('addBtn').addEventListener('click', () => {\n\n});"
+      "document.getElementById('addBtn').addEventListener('click', () => {\n\n});",
+    test: `
+function runTest() {
+  const input = document.getElementById('itemInput');
+  const btn = document.getElementById('addBtn');
+  const list = document.getElementById('itemList');
+  if (!input || !btn || !list) return { passed: false, message: '必要な要素が見つかりません。' };
+  input.value = 'タスクA';
+  btn.click();
+  const items = list.querySelectorAll('li');
+  if (items.length === 1 && items[0].textContent.trim() === 'タスクA' && input.value === '') {
+    return { passed: true, message: 'リストに正しく追加され、入力欄もクリアされました。' };
+  }
+  return { passed: false, message: 'リストへの追加、または入力欄のクリアがうまくいっていません。' };
+}
+`
   }
 ];

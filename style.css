@@ -602,6 +602,30 @@ button {
 .status-msg.show { opacity: 1; }
 .status-msg.error { color: var(--danger); }
 
+.test-result {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.6;
+  display: none;
+  border: 1px solid transparent;
+}
+
+.test-result.show { display: block; }
+
+.test-result.test-pass {
+  background: var(--mint-soft);
+  border-color: rgba(95, 217, 164, 0.35);
+  color: var(--mint);
+}
+
+.test-result.test-fail {
+  background: rgba(232, 96, 122, 0.1);
+  border-color: rgba(232, 96, 122, 0.3);
+  color: var(--danger);
+}
+
 .preview-panel iframe {
   width: 100%;
   height: 240px;
