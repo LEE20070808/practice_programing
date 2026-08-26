@@ -3,6 +3,7 @@
 const PROBLEMS = [
   {
     id: 1,
+    language: 'javascript',
     tag: 'JavaScript ・ DOM操作',
     difficulty: '初級',
     title: 'ボタンで見出しの色を変える',
@@ -33,6 +34,7 @@ function runTest() {
   },
   {
     id: 2,
+    language: 'javascript',
     tag: 'JavaScript ・ DOM操作',
     difficulty: '初級',
     title: 'ボタンでテキストを切り替える',
@@ -66,6 +68,7 @@ function runTest() {
   },
   {
     id: 3,
+    language: 'javascript',
     tag: 'JavaScript ・ イベント処理',
     difficulty: '中級',
     title: 'クリック回数をカウントする',
@@ -99,6 +102,7 @@ function runTest() {
   },
   {
     id: 4,
+    language: 'javascript',
     tag: 'JavaScript ・ フォーム',
     difficulty: '初級',
     title: '入力した文字をリアルタイムで表示する',
@@ -130,6 +134,7 @@ function runTest() {
   },
   {
     id: 5,
+    language: 'javascript',
     tag: 'JavaScript ・ DOM操作',
     difficulty: '初級',
     title: 'チェックボックスで詳細の表示・非表示を切り替える',
@@ -164,6 +169,7 @@ function runTest() {
   },
   {
     id: 6,
+    language: 'javascript',
     tag: 'JavaScript ・ 配列/DOM生成',
     difficulty: '上級',
     title: 'リストにアイテムを追加する',

@@ -41,6 +41,24 @@
       <p>取り組みたい問題を選んでください。</p>
     </div>
 
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">言語</span>
+        <div class="filter-buttons" id="langFilter" data-filter-type="language">
+          <button class="filter-btn active" data-value="all">すべて</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">難易度</span>
+        <div class="filter-buttons" id="diffFilter" data-filter-type="difficulty">
+          <button class="filter-btn active" data-value="all">すべて</button>
+          <button class="filter-btn" data-value="初級">初級</button>
+          <button class="filter-btn" data-value="中級">中級</button>
+          <button class="filter-btn" data-value="上級">上級</button>
+        </div>
+      </div>
+    </div>
+
     <div class="problem-grid" id="problemGrid">
       <!-- カードはJSで生成されます -->
     </div>
