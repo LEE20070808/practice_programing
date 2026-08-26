@@ -29,6 +29,13 @@ db.exec(`
   )
 `);
 
+// 既存のusersテーブルに has_seen_onboarding が無ければ追加する
+// （SQLiteのALTER TABLEはIF NOT EXISTSに対応していないため手動でチェック）
+const userColumns = db.prepare('PRAGMA table_info(users)').all();
+if (!userColumns.some((c) => c.name === 'has_seen_onboarding')) {
+  db.exec('ALTER TABLE users ADD COLUMN has_seen_onboarding INTEGER DEFAULT 0');
+}
+
 function todayStr() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
@@ -74,8 +81,14 @@ function publicUser(user) {
     name: user.name,
     email: user.email,
     picture: user.picture,
-    loginStreak: user.login_streak
+    loginStreak: user.login_streak,
+    hasSeenOnboarding: !!user.has_seen_onboarding
   };
+}
+
+// 初回ログイン時のスライドを見終わったら呼ぶ
+function markOnboardingSeen(userId) {
+  db.prepare('UPDATE users SET has_seen_onboarding = 1 WHERE id = ?').run(userId);
 }
 
 // 問題を正解したときに記録する。同じ問題を再度解いても solved_at が
@@ -109,5 +122,6 @@ module.exports = {
   publicUser,
   markSolved,
   getSolvedProblemIds,
-  getSolvedHistory
+  getSolvedHistory,
+  markOnboardingSeen
 };

@@ -31,6 +31,10 @@
         if (user) {
           renderLoggedIn(authArea, user);
           if (streakEl) streakEl.textContent = String(user.loginStreak).padStart(2, '0');
+
+          if (!user.hasSeenOnboarding && window.CodeDrillOnboarding) {
+            window.CodeDrillOnboarding.showOnboarding();
+          }
         } else {
           renderLoggedOut(authArea);
           if (streakEl) streakEl.textContent = '--';

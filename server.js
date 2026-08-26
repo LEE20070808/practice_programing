@@ -114,6 +114,15 @@ app.get('/api/history', (req, res) => {
   res.json({ history: db.getSolvedHistory(req.session.userId) });
 });
 
+// 初回ログイン時のスライドを見終わったことを記録する
+app.post('/api/onboarding/complete', (req, res) => {
+  if (!req.session.userId) {
+    return res.json({ ok: false });
+  }
+  db.markOnboardingSeen(req.session.userId);
+  res.json({ ok: true });
+});
+
 // ログアウト
 app.post('/api/logout', (req, res) => {
   req.session.destroy(() => {
