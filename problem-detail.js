@@ -178,4 +178,53 @@ try {
   });
 
   runCode();
+
+  // --- AIレビュー ---
+  const aiReviewBtn = document.getElementById('aiReviewBtn');
+  const aiReviewResult = document.getElementById('aiReviewResult');
+
+  if (aiReviewBtn) {
+    aiReviewBtn.addEventListener('click', () => {
+      aiReviewBtn.disabled = true;
+      aiReviewBtn.textContent = 'AIが確認中…';
+      aiReviewResult.classList.remove('show', 'error');
+      aiReviewResult.innerHTML = '';
+
+      fetch('/api/ai-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ problemId: problem.id, code: textarea.value })
+      })
+        .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            aiReviewResult.classList.add('show', 'error');
+            aiReviewResult.textContent = data.error || 'AIレビューに失敗しました。';
+            return;
+          }
+
+          const improvedCodeHtml = data.improvedCode
+            ? `<p class="subheading">改善されたコード例</p><pre class="code-block"><code>${escapeHtml(data.improvedCode)}</code></pre>`
+            : '';
+          const promptHintHtml = data.promptHint
+            ? `<p class="subheading">プロンプトのヒント</p><p class="ai-review-text">${escapeHtml(data.promptHint)}</p>`
+            : '';
+          const explanationHtml = data.explanation
+            ? `<p class="subheading">何が改善されたか</p><p class="ai-review-text">${escapeHtml(data.explanation)}</p>`
+            : '';
+
+          aiReviewResult.classList.add('show');
+          aiReviewResult.innerHTML = explanationHtml + improvedCodeHtml + promptHintHtml;
+        })
+        .catch(() => {
+          aiReviewResult.classList.add('show', 'error');
+          aiReviewResult.textContent = '通信エラーが発生しました。時間をおいて試してください。';
+        })
+        .finally(() => {
+          aiReviewBtn.disabled = false;
+          aiReviewBtn.textContent = '🤖 AIにレビューしてもらう';
+        });
+    });
+  }
 })();

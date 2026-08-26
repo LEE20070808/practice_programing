@@ -11,9 +11,14 @@ const PORT = process.env.PORT || 3000;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI; // 例: https://xxxx.onrender.com/auth/google/callback
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REDIRECT_URI) {
   console.warn('警告: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI のいずれかが未設定です。.envまたはRenderの環境変数を確認してください。');
+}
+
+if (!ANTHROPIC_API_KEY) {
+  console.warn('警告: ANTHROPIC_API_KEY が未設定です。AIレビュー機能は動作しません。');
 }
 
 const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
@@ -121,6 +126,80 @@ app.post('/api/onboarding/complete', (req, res) => {
   }
   db.markOnboardingSeen(req.session.userId);
   res.json({ ok: true });
+});
+
+// 書いたコードをClaudeに送り、改善版のコードとプロンプトのヒントをもらう
+app.post('/api/ai-review', async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'ログインが必要です' });
+  }
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(500).json({ error: 'サーバー側でAI機能が設定されていません（管理者に確認してください）' });
+  }
+
+  const { problemId, code } = req.body;
+  if (!problemId || typeof code !== 'string') {
+    return res.status(400).json({ error: 'problemId と code が必要です' });
+  }
+
+  // 送信するコードが長すぎないように上限を設ける
+  const trimmedCode = code.slice(0, 4000);
+
+  const prompt = `あなたはプログラミング学習サイト「CodeDrill」のAIレビュアーです。
+このサイトの目的は、AIを使ってコードを書く際に「良いプロンプト（指示文）の書き方」を身につけてもらうことです。
+
+以下は、学習者が書いたJavaScriptのコードです（問題ID: ${problemId}）。
+
+---
+${trimmedCode}
+---
+
+次の3つを、日本語で、必ず次のJSON形式のみで出力してください（前後に説明文や\`\`\`は付けないでください）:
+
+{
+  "improvedCode": "より良い書き方に改善したコード全体（文字列。改行は\\nで表現）",
+  "promptHint": "この改善されたコードをAIに書いてもらうには、どんなプロンプトを書くと良いか、具体例を1つ",
+  "explanation": "元のコードと比べて何がどう改善されたのか、簡潔な説明（2〜3文）"
+}`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5',
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('Anthropic APIエラー:', response.status, errText);
+      return res.status(502).json({ error: 'AIの呼び出しに失敗しました' });
+    }
+
+    const data = await response.json();
+    const textBlock = (data.content || []).find((c) => c.type === 'text');
+    const rawText = textBlock ? textBlock.text : '';
+
+    let parsed;
+    try {
+      parsed = JSON.parse(rawText);
+    } catch (e) {
+      // JSON形式で返ってこなかった場合は、そのまま説明文として渡す
+      parsed = { improvedCode: '', promptHint: '', explanation: rawText };
+    }
+
+    res.json(parsed);
+  } catch (err) {
+    console.error('AIレビューエラー:', err);
+    res.status(500).json({ error: 'AIレビュー中にエラーが発生しました' });
+  }
 });
 
 // ログアウト

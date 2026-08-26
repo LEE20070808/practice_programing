@@ -644,6 +644,60 @@ button {
   background: #ffffff;
 }
 
+/* ---------- AI Review ---------- */
+
+.ai-review-desc {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+
+.ai-review-btn {
+  background: var(--panel-raised);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.ai-review-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.ai-review-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.ai-review-result {
+  display: none;
+  margin-top: 18px;
+}
+
+.ai-review-result.show {
+  display: block;
+}
+
+.ai-review-result.error {
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.ai-review-text {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0 0 18px;
+}
+
+.ai-review-result .code-block {
+  margin-bottom: 18px;
+}
+
 @media (max-width: 860px) {
   .problem-layout { grid-template-columns: 1fr; }
 }
