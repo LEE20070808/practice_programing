@@ -44,31 +44,45 @@ function yesterdayStr() {
   return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
-// Googleログインのたびに呼ばれる。初回はユーザー作成、
-// 2回目以降は情報更新 + 連続ログイン日数(login_streak)の計算をする。
+// Googleログインのたびに呼ばれる。初回はユーザーを作成し、
+// 既存ユーザーならプロフィール情報だけ更新する（ストリークの計算はtouchLoginStreakに任せる）
 function upsertUser({ googleSub, email, name, picture }) {
   const existing = db.prepare('SELECT * FROM users WHERE google_sub = ?').get(googleSub);
-  const today = todayStr();
 
   if (!existing) {
     const info = db.prepare(`
       INSERT INTO users (google_sub, email, name, picture, login_streak, last_login_date)
       VALUES (?, ?, ?, ?, 1, ?)
-    `).run(googleSub, email, name, picture, today);
+    `).run(googleSub, email, name, picture, todayStr());
     return db.prepare('SELECT * FROM users WHERE id = ?').get(info.lastInsertRowid);
   }
 
-  let newStreak = existing.login_streak;
-  if (existing.last_login_date !== today) {
-    newStreak = existing.last_login_date === yesterdayStr() ? existing.login_streak + 1 : 1;
+  db.prepare(`
+    UPDATE users SET email = ?, name = ?, picture = ?
+    WHERE id = ?
+  `).run(email, name, picture, existing.id);
+
+  return touchLoginStreak(existing.id);
+}
+
+// ログインセッションが有効な間、ページを開くたびに呼ばれる。
+// 「今日はまだ記録していない」ときだけ連続ログイン日数を更新する。
+// これにより、Cookieでログインが保持されたまま日をまたいでアクセスしても
+// 正しくカウントされる（Googleに毎回ログインし直す必要はない）。
+function touchLoginStreak(userId) {
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+  if (!user) return null;
+
+  const today = todayStr();
+  if (user.last_login_date === today) {
+    return user; // 今日はすでに記録済み
   }
 
-  db.prepare(`
-    UPDATE users SET email = ?, name = ?, picture = ?, login_streak = ?, last_login_date = ?
-    WHERE id = ?
-  `).run(email, name, picture, newStreak, today, existing.id);
+  const newStreak = user.last_login_date === yesterdayStr() ? user.login_streak + 1 : 1;
+  db.prepare('UPDATE users SET login_streak = ?, last_login_date = ? WHERE id = ?')
+    .run(newStreak, today, userId);
 
-  return db.prepare('SELECT * FROM users WHERE id = ?').get(existing.id);
+  return db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
 }
 
 function getUserById(id) {
@@ -123,5 +137,6 @@ module.exports = {
   markSolved,
   getSolvedProblemIds,
   getSolvedHistory,
-  markOnboardingSeen
+  markOnboardingSeen,
+  touchLoginStreak
 };

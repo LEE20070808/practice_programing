@@ -81,13 +81,16 @@ app.get('/auth/google/callback', async (req, res) => {
   }
 });
 
-// 現在のログイン状態を確認する
+// 現在のログイン状態を確認する（ここで日付が変わっていればストリークも更新する）
 app.get('/api/me', (req, res) => {
   if (!req.session.userId) {
     return res.json({ user: null });
   }
-  const user = db.getUserById(req.session.userId);
-  res.json({ user: user ? db.publicUser(user) : null });
+  const user = db.touchLoginStreak(req.session.userId);
+  if (!user) {
+    return res.json({ user: null });
+  }
+  res.json({ user: db.publicUser(user) });
 });
 
 // 問題に正解したときに記録する（未ログインなら何もしない）

@@ -16,7 +16,6 @@ const PROBLEMS = [
       '  <button id="colorBtn">色を変える</button>\n' +
       '</div>',
     starter:
-      "// ここにコードを書いてください\n" +
       "document.getElementById('colorBtn').addEventListener('click', () => {\n\n});",
     test: `
 function runTest() {
@@ -47,7 +46,6 @@ function runTest() {
       '  <button id="toggleBtn">切り替える</button>\n' +
       '</div>',
     starter:
-      "// ここにコードを書いてください\n" +
       "let isOn = false;\n" +
       "document.getElementById('toggleBtn').addEventListener('click', () => {\n\n});",
     test: `
@@ -81,7 +79,6 @@ function runTest() {
       '  <button id="countBtn">カウントする</button>\n' +
       '</div>',
     starter:
-      "// ここにコードを書いてください\n" +
       "let count = 0;\n" +
       "document.getElementById('countBtn').addEventListener('click', () => {\n\n});",
     test: `
@@ -115,7 +112,6 @@ function runTest() {
       '  <p id="preview">こんにちは、ゲストさん</p>\n' +
       '</div>',
     starter:
-      "// ここにコードを書いてください\n" +
       "document.getElementById('nameInput').addEventListener('input', (e) => {\n\n});",
     test: `
 function runTest() {
@@ -147,7 +143,6 @@ function runTest() {
       '  <p id="detail" style="display:none;">これは詳細情報です。</p>\n' +
       '</div>',
     starter:
-      "// ここにコードを書いてください\n" +
       "document.getElementById('showToggle').addEventListener('change', (e) => {\n\n});",
     test: `
 function runTest() {
@@ -184,7 +179,6 @@ function runTest() {
       '  <ul id="itemList"></ul>\n' +
       '</div>',
     starter:
-      "// ここにコードを書いてください\n" +
       "document.getElementById('addBtn').addEventListener('click', () => {\n\n});",
     test: `
 function runTest() {
