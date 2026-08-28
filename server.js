@@ -140,18 +140,20 @@ app.post('/api/ai-review', async (req, res) => {
     return res.status(500).json({ error: 'サーバー側でAI機能が設定されていません（管理者に確認してください）' });
   }
 
-  const { problemId, code } = req.body;
+  const { problemId, code, language, title } = req.body;
   if (!problemId || typeof code !== 'string') {
     return res.status(400).json({ error: 'problemId と code が必要です' });
   }
 
   // 送信するコードが長すぎないように上限を設ける
   const trimmedCode = code.slice(0, 4000);
+  const languageLabel = language === 'python' ? 'Python' : language === 'go' ? 'Go' : 'JavaScript';
 
   const prompt = `あなたはプログラミング学習サイト「CodeDrill」のAIレビュアーです。
 このサイトの目的は、AIを使ってコードを書く際に「良いプロンプト（指示文）の書き方」を身につけてもらうことです。
 
-以下は、学習者が書いたJavaScriptのコードです（問題ID: ${problemId}）。
+以下は、学習者が書いた${languageLabel}のコードです（問題: 「${title || `問題ID ${problemId}`}」）。
+このコードの言語は必ず ${languageLabel} です。改善案も必ず ${languageLabel} のまま書いてください。他の言語に書き換えないでください。
 
 ---
 ${trimmedCode}
@@ -160,7 +162,7 @@ ${trimmedCode}
 次の3つを、日本語で、必ず次のJSON形式のみで出力してください（前後に説明文や\`\`\`は付けないでください）:
 
 {
-  "improvedCode": "より良い書き方に改善したコード全体（文字列。改行は\\nで表現）",
+  "improvedCode": "${languageLabel}で、より良い書き方に改善したコード全体（文字列。改行は\\nで表現）",
   "promptHint": "この改善されたコードをAIに書いてもらうには、どんなプロンプトを書くと良いか、具体例を1つ",
   "explanation": "元のコードと比べて何がどう改善されたのか、簡潔な説明（2〜3文）"
 }`;

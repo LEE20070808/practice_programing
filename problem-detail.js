@@ -326,7 +326,12 @@ try {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ problemId: problem.id, code: textarea.value })
+        body: JSON.stringify({
+          problemId: problem.id,
+          code: textarea.value,
+          language: problem.language,
+          title: problem.title
+        })
       })
         .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
         .then(({ ok, data }) => {
