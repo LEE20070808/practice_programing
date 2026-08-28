@@ -4,6 +4,7 @@ const PROBLEMS = [
   {
     id: 1,
     language: 'javascript',
+    type: 'dom',
     tag: 'JavaScript ・ DOM操作',
     difficulty: '初級',
     title: 'ボタンで見出しの色を変える',
@@ -35,6 +36,7 @@ function runTest() {
   {
     id: 2,
     language: 'javascript',
+    type: 'dom',
     tag: 'JavaScript ・ DOM操作',
     difficulty: '初級',
     title: 'ボタンでテキストを切り替える',
@@ -69,6 +71,7 @@ function runTest() {
   {
     id: 3,
     language: 'javascript',
+    type: 'dom',
     tag: 'JavaScript ・ イベント処理',
     difficulty: '中級',
     title: 'クリック回数をカウントする',
@@ -103,6 +106,7 @@ function runTest() {
   {
     id: 4,
     language: 'javascript',
+    type: 'dom',
     tag: 'JavaScript ・ フォーム',
     difficulty: '初級',
     title: '入力した文字をリアルタイムで表示する',
@@ -135,6 +139,7 @@ function runTest() {
   {
     id: 5,
     language: 'javascript',
+    type: 'dom',
     tag: 'JavaScript ・ DOM操作',
     difficulty: '初級',
     title: 'チェックボックスで詳細の表示・非表示を切り替える',
@@ -170,6 +175,7 @@ function runTest() {
   {
     id: 6,
     language: 'javascript',
+    type: 'dom',
     tag: 'JavaScript ・ 配列/DOM生成',
     difficulty: '上級',
     title: 'リストにアイテムを追加する',
@@ -201,5 +207,77 @@ function runTest() {
   return { passed: false, message: 'リストへの追加、または入力欄のクリアがうまくいっていません。' };
 }
 `
+  },
+  {
+    id: 7,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '二つの数の和',
+    summary: '標準入力から2つの整数を受け取り、その和を出力するAtCoder形式の問題です。',
+    statement:
+      '標準入力から、半角スペース区切りで2つの整数 A, B が1行で与えられます。' +
+      'A + B の値を1行で出力してください。',
+    constraints: '1 ≤ A, B ≤ 1000',
+    samples: [
+      { input: '3 5', output: '8' },
+      { input: '10 20', output: '30' }
+    ],
+    testCases: [
+      { input: '3 5', output: '8' },
+      { input: '10 20', output: '30' },
+      { input: '1 1', output: '2' },
+      { input: '999 1', output: '1000' }
+    ],
+    starter: ''
+  },
+  {
+    id: 8,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '偶数か奇数か',
+    summary: '標準入力から整数を受け取り、偶数か奇数かを判定するAtCoder形式の問題です。',
+    statement:
+      '標準入力から整数 N が1行で与えられます。' +
+      'Nが偶数なら <code>Even</code>、奇数なら <code>Odd</code> と出力してください。',
+    constraints: '1 ≤ N ≤ 1000000000',
+    samples: [
+      { input: '4', output: 'Even' },
+      { input: '7', output: 'Odd' }
+    ],
+    testCases: [
+      { input: '4', output: 'Even' },
+      { input: '7', output: 'Odd' },
+      { input: '1', output: 'Odd' },
+      { input: '1000000000', output: 'Even' }
+    ],
+    starter: ''
+  },
+  {
+    id: 9,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力/ループ',
+    difficulty: '中級',
+    title: '1からNまでの和',
+    summary: 'ループ処理を使って合計値を求める、AtCoder形式の問題です。',
+    statement:
+      '標準入力から整数 N が1行で与えられます。' +
+      '1からNまでの整数の総和を出力してください。',
+    constraints: '1 ≤ N ≤ 100000',
+    samples: [
+      { input: '5', output: '15' },
+      { input: '1', output: '1' }
+    ],
+    testCases: [
+      { input: '5', output: '15' },
+      { input: '1', output: '1' },
+      { input: '10', output: '55' },
+      { input: '100', output: '5050' }
+    ],
+    starter: ''
   }
 ];

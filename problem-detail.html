@@ -45,7 +45,7 @@
 
       <div class="editor-preview">
         <div class="panel editor-panel">
-          <p class="subheading">あなたのJavaScript</p>
+          <p class="subheading" id="editorLabel">あなたのコード</p>
           <textarea id="jsInput" spellcheck="false"></textarea>
           <div class="editor-actions">
             <button class="run-btn" id="runBtn">実行する ▶</button>
@@ -54,9 +54,14 @@
           <div class="test-result" id="testResult"></div>
         </div>
 
-        <div class="panel preview-panel">
+        <div class="panel preview-panel" id="previewPanel">
           <p class="subheading">プレビュー</p>
           <iframe id="previewFrame" title="プレビュー" sandbox="allow-scripts"></iframe>
+        </div>
+
+        <div class="panel io-panel" id="ioPanel" style="display:none;">
+          <p class="subheading">テストケース結果</p>
+          <div class="io-cases" id="ioCases"></div>
         </div>
 
         <div class="panel ai-review-panel">
@@ -71,6 +76,8 @@
     </div>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js" defer></script>
 
 <script src="problems-data.js"></script>
 <script src="app.js"></script>

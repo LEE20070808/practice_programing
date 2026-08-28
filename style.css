@@ -757,6 +757,82 @@ button {
   margin-bottom: 18px;
 }
 
+/* ---------- IO Problems (AtCoder方式) ---------- */
+
+.io-sample {
+  margin-bottom: 8px;
+}
+
+.io-loading {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+.io-cases {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.io-case {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.io-case-pass {
+  border-color: rgba(95, 217, 164, 0.35);
+}
+
+.io-case-fail {
+  border-color: rgba(232, 96, 122, 0.35);
+}
+
+.io-case-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.io-case-pass .io-case-header {
+  background: var(--mint-soft);
+  color: var(--mint);
+}
+
+.io-case-fail .io-case-header {
+  background: rgba(232, 96, 122, 0.1);
+  color: var(--danger);
+}
+
+.io-case-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--panel-alt);
+}
+
+.io-case-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  margin-bottom: 4px;
+}
+
+.io-case-body pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 @media (max-width: 860px) {
   .problem-layout { grid-template-columns: 1fr; }
 }
