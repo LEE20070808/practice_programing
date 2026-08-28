@@ -3,6 +3,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
+const pgSessionFactory = require('connect-pg-simple');
 const { OAuth2Client } = require('google-auth-library');
 const db = require('./db');
 
@@ -10,25 +11,31 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI; // 例: https://xxxx.onrender.com/auth/google/callback
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI; // 例: https://example.com/auth/google/callback
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET || !GOOGLE_REDIRECT_URI) {
-  console.warn('警告: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI のいずれかが未設定です。.envまたはRenderの環境変数を確認してください。');
+  console.warn('警告: GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_REDIRECT_URI のいずれかが未設定です。.envを確認してください。');
 }
 
 if (!ANTHROPIC_API_KEY) {
   console.warn('警告: ANTHROPIC_API_KEY が未設定です。AIレビュー機能は動作しません。');
 }
 
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+if (!process.env.DATABASE_URL) {
+  console.warn('警告: DATABASE_URL が未設定です。.envを確認してください。');
+}
 
-// Renderのプロキシ経由でも req.protocol が https と正しく判定されるようにする
+const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+const PgSession = pgSessionFactory(session);
+
+// リバースプロキシ(nginxなど)経由でも req.protocol が https と正しく判定されるようにする
 app.set('trust proxy', 1);
 
 app.use(express.json());
 
 app.use(session({
+  store: new PgSession({ pool: db.pool, createTableIfMissing: true }),
   secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
   resave: false,
   saveUninitialized: false,
@@ -66,7 +73,7 @@ app.get('/auth/google/callback', async (req, res) => {
     });
     const payload = ticket.getPayload();
 
-    const user = db.upsertUser({
+    const user = await db.upsertUser({
       googleSub: payload.sub,
       email: payload.email,
       name: payload.name,
@@ -82,11 +89,11 @@ app.get('/auth/google/callback', async (req, res) => {
 });
 
 // 現在のログイン状態を確認する（ここで日付が変わっていればストリークも更新する）
-app.get('/api/me', (req, res) => {
+app.get('/api/me', async (req, res) => {
   if (!req.session.userId) {
     return res.json({ user: null });
   }
-  const user = db.touchLoginStreak(req.session.userId);
+  const user = await db.touchLoginStreak(req.session.userId);
   if (!user) {
     return res.json({ user: null });
   }
@@ -94,7 +101,7 @@ app.get('/api/me', (req, res) => {
 });
 
 // 問題に正解したときに記録する（未ログインなら何もしない）
-app.post('/api/problems/:id/solve', (req, res) => {
+app.post('/api/problems/:id/solve', async (req, res) => {
   if (!req.session.userId) {
     return res.json({ ok: false, reason: 'not_logged_in' });
   }
@@ -102,32 +109,32 @@ app.post('/api/problems/:id/solve', (req, res) => {
   if (!problemId) {
     return res.status(400).json({ ok: false, error: 'invalid problem id' });
   }
-  db.markSolved(req.session.userId, problemId);
+  await db.markSolved(req.session.userId, problemId);
   res.json({ ok: true });
 });
 
 // バッジ表示用: 自分が解いた問題IDの一覧
-app.get('/api/solved-ids', (req, res) => {
+app.get('/api/solved-ids', async (req, res) => {
   if (!req.session.userId) {
     return res.json({ solvedIds: [] });
   }
-  res.json({ solvedIds: db.getSolvedProblemIds(req.session.userId) });
+  res.json({ solvedIds: await db.getSolvedProblemIds(req.session.userId) });
 });
 
 // 履歴ページ用: 解いた日時つきの一覧
-app.get('/api/history', (req, res) => {
+app.get('/api/history', async (req, res) => {
   if (!req.session.userId) {
     return res.json({ history: [] });
   }
-  res.json({ history: db.getSolvedHistory(req.session.userId) });
+  res.json({ history: await db.getSolvedHistory(req.session.userId) });
 });
 
 // 初回ログイン時のスライドを見終わったことを記録する
-app.post('/api/onboarding/complete', (req, res) => {
+app.post('/api/onboarding/complete', async (req, res) => {
   if (!req.session.userId) {
     return res.json({ ok: false });
   }
-  db.markOnboardingSeen(req.session.userId);
+  await db.markOnboardingSeen(req.session.userId);
   res.json({ ok: true });
 });
 
@@ -145,7 +152,6 @@ app.post('/api/ai-review', async (req, res) => {
     return res.status(400).json({ error: 'problemId と code が必要です' });
   }
 
-  // 送信するコードが長すぎないように上限を設ける
   const trimmedCode = code.slice(0, 4000);
   const languageLabel = language === 'python' ? 'Python' : language === 'go' ? 'Go' : 'JavaScript';
 
@@ -196,7 +202,6 @@ ${trimmedCode}
     try {
       parsed = JSON.parse(rawText);
     } catch (e) {
-      // JSON形式で返ってこなかった場合は、そのまま説明文として渡す
       parsed = { improvedCode: '', promptHint: '', explanation: rawText };
     }
 
@@ -215,6 +220,11 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`CodeDrill server is running on port ${PORT}`);
-});
+async function start() {
+  await db.initDb();
+  app.listen(PORT, () => {
+    console.log(`CodeDrill server is running on port ${PORT}`);
+  });
+}
+
+start();
