@@ -98,24 +98,61 @@ app.get('/api/me', async (req, res) => {
   if (!user) {
     return res.json({ user: null });
   }
-  res.json({ user: db.publicUser(user) });
+  // プランと今日の使用状況も返す（画面に「残り○回」を出したいときに使える）
+  const tier = await resolveAiTier(user.id);
+  const usedToday = await db.getAiUsageToday(user.id);
+  res.json({
+    user: db.publicUser(user),
+    plan: tier.name,
+    aiReview: {
+      usedToday,
+      dailyLimit: tier.dailyLimit,
+      remaining: Math.max(0, tier.dailyLimit - usedToday)
+    }
+  });
 });
 
 // AIレビュー: 短時間の連打を防ぐ（1人あたり1分に3回まで）
+// こちらはメモリ上のカウントで十分（再起動でリセットされても実害がない）
 const aiReviewBurstLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 3,
-  keyGenerator: (req) => String(req.session.userId || req.ip),
+  keyGenerator: (req) => String(req.session.userId),
   message: { error: '少し時間をおいてから、もう一度お試しください' }
 });
 
-// AIレビュー: 1日あたりの総量を制限（1人あたり1日30回まで）
-const aiReviewDailyLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000,
-  max: 30,
-  keyGenerator: (req) => String(req.session.userId || req.ip),
-  message: { error: '本日のAIレビューの上限に達しました。また明日お試しください' }
-});
+// --- AIレビューのプラン設定 -------------------------------------------
+// ここを書き換えるだけで、各プランのモデル・1日の上限・出力量を調整できる。
+// 将来プランを売り始めたら、db.grantEntitlement(userId, 'ai:standard') を
+// 呼ぶだけでそのユーザーが standard に上がる。
+const AI_TIERS = {
+  free: {
+    model: 'claude-sonnet-5',
+    dailyLimit: 30,
+    maxTokens: 1024
+  },
+  standard: {
+    model: 'claude-sonnet-5',
+    dailyLimit: 200,
+    maxTokens: 2048
+  },
+  pro: {
+    model: 'claude-opus-5',
+    dailyLimit: 200,
+    maxTokens: 2048
+  }
+};
+
+// このユーザーが今どのプランかを判定する（上位のものから順に見る）
+async function resolveAiTier(userId) {
+  if (await db.hasEntitlement(userId, 'ai:pro')) {
+    return { name: 'pro', ...AI_TIERS.pro };
+  }
+  if (await db.hasEntitlement(userId, 'ai:standard')) {
+    return { name: 'standard', ...AI_TIERS.standard };
+  }
+  return { name: 'free', ...AI_TIERS.free };
+}
 
 // 問題に正解したときに記録する（未ログインなら何もしない）
 app.post('/api/problems/:id/solve', async (req, res) => {
@@ -156,7 +193,7 @@ app.post('/api/onboarding/complete', async (req, res) => {
 });
 
 // 書いたコードをClaudeに送り、改善版のコードとプロンプトのヒントをもらう
-app.post('/api/ai-review', aiReviewBurstLimiter, aiReviewDailyLimiter, async (req, res) => {
+app.post('/api/ai-review', aiReviewBurstLimiter, async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'ログインが必要です' });
   }
@@ -167,6 +204,19 @@ app.post('/api/ai-review', aiReviewBurstLimiter, aiReviewDailyLimiter, async (re
   const { problemId, code, language, title } = req.body;
   if (!problemId || typeof code !== 'string') {
     return res.status(400).json({ error: 'problemId と code が必要です' });
+  }
+
+  // このユーザーのプランを調べ、今日の使用回数が上限に達していないか確認する。
+  // カウントはDBに持っているので、pm2を再起動しても消えない。
+  const tier = await resolveAiTier(req.session.userId);
+  const usedToday = await db.getAiUsageToday(req.session.userId);
+  if (usedToday >= tier.dailyLimit) {
+    return res.status(429).json({
+      error: `本日のAIレビューの上限（${tier.dailyLimit}回）に達しました。また明日お試しください`,
+      plan: tier.name,
+      usedToday,
+      dailyLimit: tier.dailyLimit
+    });
   }
 
   const trimmedCode = code.slice(0, 4000);
@@ -200,8 +250,8 @@ ${trimmedCode}
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 1024,
+        model: tier.model,
+        max_tokens: tier.maxTokens,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -223,7 +273,16 @@ ${trimmedCode}
       parsed = { improvedCode: '', promptHint: '', explanation: rawText };
     }
 
-    res.json(parsed);
+    // 呼び出しが成功したときだけ回数を消費する（失敗した分は課金されないため）
+    const newCount = await db.incrementAiUsage(req.session.userId);
+
+    res.json({
+      ...parsed,
+      plan: tier.name,
+      usedToday: newCount,
+      dailyLimit: tier.dailyLimit,
+      remaining: Math.max(0, tier.dailyLimit - newCount)
+    });
   } catch (err) {
     console.error('AIレビューエラー:', err);
     res.status(500).json({ error: 'AIレビュー中にエラーが発生しました' });

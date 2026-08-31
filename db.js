@@ -1,4 +1,4 @@
-// PostgreSQLでユーザー情報を管理する（旧: SQLiteのファイル保存から移行）
+// PostgreSQLでユーザー情報を管理する （旧: SQLiteのファイル保存から移行）
 
 const { Pool } = require('pg');
 
@@ -31,6 +31,32 @@ async function initDb() {
       UNIQUE(user_id, problem_id)
     )
   `);
+
+  // 「誰が、どの機能を使えるか」を持つテーブル。
+  // feature には 'lang:python' / 'ai:high-accuracy' のような文字列が入る。
+  // expires_at が NULL なら無期限、日時が入っていればその時刻まで有効。
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS entitlements (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      feature TEXT NOT NULL,
+      expires_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(user_id, feature)
+    )
+  `);
+
+  // AIレビューの1日ごとの使用回数。used_on は 'YYYY-MM-DD' 形式。
+  // メモリではなくDBに持つので、pm2を再起動してもカウントが消えない。
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ai_usage (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      used_on TEXT NOT NULL,
+      count INTEGER DEFAULT 0,
+      UNIQUE(user_id, used_on)
+    )
+  `);
 }
 
 function todayStr() {
@@ -60,7 +86,6 @@ async function upsertUser({ googleSub, email, name, picture }) {
     'UPDATE users SET email = $1, name = $2, picture = $3 WHERE id = $4',
     [email, name, picture, existing.id]
   );
-
   return touchLoginStreak(existing.id);
 }
 
@@ -138,6 +163,72 @@ async function getSolvedHistory(userId) {
   return rows;
 }
 
+// --- ここから課金の下地 -------------------------------------------------
+
+// このユーザーが指定の機能を使えるか。期限切れのものは無効として扱う。
+async function hasEntitlement(userId, feature) {
+  const { rows } = await pool.query(
+    `SELECT 1 FROM entitlements
+     WHERE user_id = $1 AND feature = $2
+       AND (expires_at IS NULL OR expires_at > NOW())`,
+    [userId, feature]
+  );
+  return rows.length > 0;
+}
+
+// このユーザーが今持っている権限の一覧（期限切れを除く）
+async function getEntitlements(userId) {
+  const { rows } = await pool.query(
+    `SELECT feature FROM entitlements
+     WHERE user_id = $1
+       AND (expires_at IS NULL OR expires_at > NOW())`,
+    [userId]
+  );
+  return rows.map((r) => r.feature);
+}
+
+// 権限を付与する。expiresAt に null を渡すと無期限。
+// すでに同じ権限があれば期限だけ上書きする（更新の延長に使える）。
+async function grantEntitlement(userId, feature, expiresAt = null) {
+  await pool.query(
+    `INSERT INTO entitlements (user_id, feature, expires_at)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (user_id, feature)
+     DO UPDATE SET expires_at = EXCLUDED.expires_at`,
+    [userId, feature, expiresAt]
+  );
+}
+
+// 権限を取り消す（解約時などに使う）
+async function revokeEntitlement(userId, feature) {
+  await pool.query(
+    'DELETE FROM entitlements WHERE user_id = $1 AND feature = $2',
+    [userId, feature]
+  );
+}
+
+// 今日すでに何回AIレビューを使ったか
+async function getAiUsageToday(userId) {
+  const { rows } = await pool.query(
+    'SELECT count FROM ai_usage WHERE user_id = $1 AND used_on = $2',
+    [userId, todayStr()]
+  );
+  return rows.length > 0 ? rows[0].count : 0;
+}
+
+// 使用回数を1増やして、増やした後の値を返す
+async function incrementAiUsage(userId) {
+  const { rows } = await pool.query(
+    `INSERT INTO ai_usage (user_id, used_on, count)
+     VALUES ($1, $2, 1)
+     ON CONFLICT (user_id, used_on)
+     DO UPDATE SET count = ai_usage.count + 1
+     RETURNING count`,
+    [userId, todayStr()]
+  );
+  return rows[0].count;
+}
+
 module.exports = {
   pool,
   initDb,
@@ -148,5 +239,11 @@ module.exports = {
   getSolvedProblemIds,
   getSolvedHistory,
   markOnboardingSeen,
-  touchLoginStreak
+  touchLoginStreak,
+  hasEntitlement,
+  getEntitlements,
+  grantEntitlement,
+  revokeEntitlement,
+  getAiUsageToday,
+  incrementAiUsage
 };
