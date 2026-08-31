@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const express = require('express');
 const session = require('express-session');
@@ -100,6 +101,22 @@ app.get('/api/me', async (req, res) => {
   res.json({ user: db.publicUser(user) });
 });
 
+// AIレビュー: 短時間の連打を防ぐ（1人あたり1分に3回まで）
+const aiReviewBurstLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 3,
+  keyGenerator: (req) => String(req.session.userId || req.ip),
+  message: { error: '少し時間をおいてから、もう一度お試しください' }
+});
+
+// AIレビュー: 1日あたりの総量を制限（1人あたり1日30回まで）
+const aiReviewDailyLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 30,
+  keyGenerator: (req) => String(req.session.userId || req.ip),
+  message: { error: '本日のAIレビューの上限に達しました。また明日お試しください' }
+});
+
 // 問題に正解したときに記録する（未ログインなら何もしない）
 app.post('/api/problems/:id/solve', async (req, res) => {
   if (!req.session.userId) {
@@ -139,7 +156,7 @@ app.post('/api/onboarding/complete', async (req, res) => {
 });
 
 // 書いたコードをClaudeに送り、改善版のコードとプロンプトのヒントをもらう
-app.post('/api/ai-review', async (req, res) => {
+app.post('/api/ai-review', aiReviewBurstLimiter, aiReviewDailyLimiter, async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'ログインが必要です' });
   }
@@ -153,12 +170,13 @@ app.post('/api/ai-review', async (req, res) => {
   }
 
   const trimmedCode = code.slice(0, 4000);
+  const safeTitle = String(title || '').slice(0, 100);
   const languageLabel = language === 'python' ? 'Python' : language === 'go' ? 'Go' : 'JavaScript';
 
   const prompt = `あなたはプログラミング学習サイト「CodeDrill」のAIレビュアーです。
 このサイトの目的は、AIを使ってコードを書く際に「良いプロンプト（指示文）の書き方」を身につけてもらうことです。
 
-以下は、学習者が書いた${languageLabel}のコードです（問題: 「${title || `問題ID ${problemId}`}」）。
+以下は、学習者が書いた${languageLabel}のコードです（問題: 「${safeTitle || `問題ID ${problemId}`}」）。
 このコードの言語は必ず ${languageLabel} です。改善案も必ず ${languageLabel} のまま書いてください。他の言語に書き換えないでください。
 
 ---
