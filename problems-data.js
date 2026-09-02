@@ -279,5 +279,257 @@ function runTest() {
       { input: '100', output: '5050' }
     ],
     starter: ''
-  }
+  },
+  {
+    id: 10,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '三つの数の最大値',
+    summary: '標準入力から3つの整数を受け取り、その中で最も大きいものを出力します。',
+    statement:
+      '標準入力から、半角スペース区切りで3つの整数 A, B, C が1行で与えられます。' +
+      'この3つの中で最も大きい値を1行で出力してください。',
+    constraints: '1 ≤ A, B, C ≤ 1000',
+    samples: [
+      { input: '3 9 5', output: '9' },
+      { input: '10 2 7', output: '10' }
+    ],
+    testCases: [
+      { input: '3 9 5', output: '9' },
+      { input: '10 2 7', output: '10' },
+      { input: '1 1 1', output: '1' },
+      { input: '100 100 99', output: '100' }
+    ],
+    starter: ''
+  },
+  {
+    id: 11,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '文字列をくり返す',
+    summary: '文字列と回数を受け取り、その回数だけつなげた文字列を出力します。',
+    statement:
+      '1行目に文字列 S、2行目に整数 N が与えられます。' +
+      'S を N 回くり返してつなげた文字列を、1行で出力してください。<br><br>' +
+      '例えば S が <code>abc</code>、N が <code>3</code> のとき、答えは <code>abcabcabc</code> です。',
+    constraints: '1 ≤ Sの長さ ≤ 20、1 ≤ N ≤ 10',
+    samples: [
+      { input: 'abc\n3', output: 'abcabcabc' },
+      { input: 'x\n1', output: 'x' }
+    ],
+    testCases: [
+      { input: 'abc\n3', output: 'abcabcabc' },
+      { input: 'x\n1', output: 'x' },
+      { input: 'hi\n5', output: 'hihihihihi' },
+      { input: 'ab\n2', output: 'abab' }
+    ],
+    starter: ''
+  },
+  {
+    id: 12,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: 'N個の整数の合計',
+    summary: '複数の整数をまとめて受け取り、その合計を出力します。',
+    statement:
+      '1行目に整数 N が与えられます。' +
+      '2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'これらすべての合計を1行で出力してください。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '3\n1 2 3', output: '6' },
+      { input: '5\n10 20 30 40 50', output: '150' }
+    ],
+    testCases: [
+      { input: '3\n1 2 3', output: '6' },
+      { input: '5\n10 20 30 40 50', output: '150' },
+      { input: '1\n7', output: '7' },
+      { input: '4\n0 0 0 0', output: '0' }
+    ],
+    starter: ''
+  },
+  {
+    id: 13,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '商と余り',
+    summary: '割り算の商と余りを求めます。整数どうしの割り算の書き方を覚える問題です。',
+    statement:
+      '標準入力から、半角スペース区切りで2つの整数 A, B が1行で与えられます。' +
+      'A を B で割ったときの商と余りを、半角スペース区切りで1行に出力してください。<br><br>' +
+      '例えば A が <code>7</code>、B が <code>3</code> のとき、商は <code>2</code>、余りは <code>1</code> なので <code>2 1</code> と出力します。',
+    constraints: '1 ≤ A ≤ 1000、1 ≤ B ≤ 1000',
+    samples: [
+      { input: '7 3', output: '2 1' },
+      { input: '10 5', output: '2 0' }
+    ],
+    testCases: [
+      { input: '7 3', output: '2 1' },
+      { input: '10 5', output: '2 0' },
+      { input: '1 2', output: '0 1' },
+      { input: '100 7', output: '14 2' }
+    ],
+    starter: ''
+  },
+  {
+    id: 14,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '大文字に変換する',
+    summary: '受け取った文字列をすべて大文字にして出力します。',
+    statement:
+      '標準入力から文字列 S が1行で与えられます。' +
+      'S に含まれるアルファベットをすべて大文字にして、1行で出力してください。' +
+      '数字などアルファベット以外の文字は、そのまま出力します。',
+    constraints: '1 ≤ Sの長さ ≤ 50',
+    samples: [
+      { input: 'hello', output: 'HELLO' },
+      { input: 'CodeDrill', output: 'CODEDRILL' }
+    ],
+    testCases: [
+      { input: 'hello', output: 'HELLO' },
+      { input: 'CodeDrill', output: 'CODEDRILL' },
+      { input: 'a', output: 'A' },
+      { input: 'abc123', output: 'ABC123' }
+    ],
+    starter: ''
+  },
+  {
+    id: 15,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '平均値を小数第2位まで',
+    summary: '整数の平均を求め、小数第2位までの形式で出力します。出力の書式を整える練習です。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'これらの平均値を、<strong>小数第2位まで</strong>の形式で1行に出力してください。<br><br>' +
+      '例えば平均が 2 のときは <code>2.00</code>、2.75 のときは <code>2.75</code> と出力します。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '3\n1 2 3', output: '2.00' },
+      { input: '4\n1 2 3 5', output: '2.75' }
+    ],
+    testCases: [
+      { input: '3\n1 2 3', output: '2.00' },
+      { input: '4\n1 2 3 5', output: '2.75' },
+      { input: '2\n10 5', output: '7.50' },
+      { input: '5\n1 1 1 1 2', output: '1.20' }
+    ],
+    starter: ''
+  },
+  {
+    id: 16,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '最大値は何番目か',
+    summary: 'リストの中で最も大きい値が何番目にあるかを求めます。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'この中で最も大きい値が<strong>何番目</strong>にあるかを、1行で出力してください。' +
+      '先頭を1番目と数えます。<br><br>' +
+      '最大値が複数ある場合は、<strong>最も前にあるもの</strong>の位置を答えてください。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n3 1 4 1 5', output: '5' },
+      { input: '3\n10 2 7', output: '1' }
+    ],
+    testCases: [
+      { input: '5\n3 1 4 1 5', output: '5' },
+      { input: '3\n10 2 7', output: '1' },
+      { input: '4\n1 9 9 2', output: '2' },
+      { input: '1\n42', output: '1' }
+    ],
+    starter: ''
+  },
+  {
+    id: 17,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '回文かどうか',
+    summary: '前から読んでも後ろから読んでも同じ文字列かを判定します。',
+    statement:
+      '標準入力から文字列 S が1行で与えられます。' +
+      'S が回文（前から読んでも後ろから読んでも同じ）であれば <code>Yes</code>、' +
+      'そうでなければ <code>No</code> と1行で出力してください。<br><br>' +
+      '例えば <code>level</code> は回文なので <code>Yes</code>、<code>hello</code> は回文ではないので <code>No</code> です。',
+    constraints: '1 ≤ Sの長さ ≤ 100（Sは英小文字のみ）',
+    samples: [
+      { input: 'level', output: 'Yes' },
+      { input: 'hello', output: 'No' }
+    ],
+    testCases: [
+      { input: 'level', output: 'Yes' },
+      { input: 'hello', output: 'No' },
+      { input: 'a', output: 'Yes' },
+      { input: 'abba', output: 'Yes' }
+    ],
+    starter: ''
+  },
+  {
+    id: 18,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '3または5の倍数の合計',
+    summary: '1からNまでの中で、条件に当てはまる数だけを合計します。',
+    statement:
+      '標準入力から整数 N が1行で与えられます。' +
+      '1 以上 N 以下の整数のうち、<strong>3の倍数または5の倍数</strong>であるものすべての合計を、1行で出力してください。<br><br>' +
+      '例えば N が 10 のとき、対象は 3, 5, 6, 9, 10 なので、合計は 33 です。',
+    constraints: '1 ≤ N ≤ 100000',
+    samples: [
+      { input: '10', output: '33' },
+      { input: '3', output: '3' }
+    ],
+    testCases: [
+      { input: '10', output: '33' },
+      { input: '3', output: '3' },
+      { input: '15', output: '60' },
+      { input: '100', output: '2418' }
+    ],
+    starter: ''
+  },
+  {
+    id: 19,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: 'いちばん多い文字',
+    summary: '文字列の中で最も多く登場する文字を求めます。数え上げの練習です。',
+    statement:
+      '標準入力から文字列 S が1行で与えられます。' +
+      'S の中で<strong>最も多く登場する文字</strong>を1行で出力してください。<br><br>' +
+      '最も多い文字が複数ある場合は、その中で<strong>アルファベット順で最も早いもの</strong>を出力してください。' +
+      '例えば <code>abc</code> はすべて1回ずつなので、答えは <code>a</code> です。',
+    constraints: '1 ≤ Sの長さ ≤ 100（Sは英小文字のみ）',
+    samples: [
+      { input: 'aabbbcc', output: 'b' },
+      { input: 'abc', output: 'a' }
+    ],
+    testCases: [
+      { input: 'aabbbcc', output: 'b' },
+      { input: 'abc', output: 'a' },
+      { input: 'zzzyy', output: 'z' },
+      { input: 'banana', output: 'a' }
+    ],
+    starter: ''
+  },
 ];

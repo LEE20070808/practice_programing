@@ -42,7 +42,27 @@
   const ioPanel = document.getElementById('ioPanel');
   const ioCasesEl = document.getElementById('ioCases');
 
-  textarea.value = problem.starter || '';
+  // textarea を CodeMirror に置き換える（色付け・括弧の自動補完・自動インデント）
+  const editor = CodeMirror.fromTextArea(textarea, {
+    mode: problem.language === 'python' ? 'python' : 'javascript',
+    theme: 'material-darker',
+    lineNumbers: true,
+    autoCloseBrackets: true,
+    matchBrackets: true,
+    indentUnit: 4,
+    tabSize: 4,
+    indentWithTabs: false,
+    extraKeys: {
+      Tab: (cm) => cm.execCommand('indentMore'),
+      'Shift-Tab': (cm) => cm.execCommand('indentLess')
+    }
+  });
+  editor.setValue(problem.starter || '');
+
+  // エディタの中身を取り出す（以後 textarea.value の代わりに使う）
+  function getCode() {
+    return editor.getValue();
+  }
 
   let alreadyMarkedSolved = false;
   function markSolvedOnce() {
@@ -112,7 +132,7 @@ _result = _stdout.getvalue()
     }
 
     async function runAllCases() {
-      const code = textarea.value;
+      const code = getCode();
       const testCases = problem.testCases || [];
 
       ioCasesEl.innerHTML = '<p class="io-loading">Pythonを準備しています…（初回は少し時間がかかります）</p>';
@@ -254,7 +274,7 @@ _result = _stdout.getvalue()
     let hasRunManually = false;
 
     function runCode() {
-      const userJs = textarea.value;
+      const userJs = getCode();
       const testScript = problem.test || '';
 
       const doc = `<!DOCTYPE html><html><head>${PREVIEW_STYLE}</head><body>${problem.html}
@@ -328,7 +348,7 @@ try {
         credentials: 'include',
         body: JSON.stringify({
           problemId: problem.id,
-          code: textarea.value,
+          code: getCode(),
           language: problem.language,
           title: problem.title
         })
@@ -353,6 +373,12 @@ try {
 
           aiReviewResult.classList.add('show');
           aiReviewResult.innerHTML = explanationHtml + improvedCodeHtml + promptHintHtml;
+          if (typeof data.remaining === 'number') {
+            aiReviewResult.innerHTML += `<p class="ai-review-remaining">本日の残り回数: ${data.remaining} / ${data.dailyLimit}</p>`;
+          }
+          if (window.hljs) {
+            aiReviewResult.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
+          }
         })
         .catch(() => {
           aiReviewResult.classList.add('show', 'error');

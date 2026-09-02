@@ -1051,3 +1051,21 @@ button {
 }
 
 .onboarding-next:hover { background: var(--accent-strong); }
+
+.ai-review-remaining {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.CodeMirror {
+  height: 320px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: transparent;
+}
+
+.CodeMirror-gutters {
+  background: transparent;
+  border-right: none;
+}

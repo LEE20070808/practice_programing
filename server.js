@@ -266,9 +266,15 @@ ${trimmedCode}
     const textBlock = (data.content || []).find((c) => c.type === 'text');
     const rawText = textBlock ? textBlock.text : '';
 
+        // モデルが ```json ... ``` で囲んで返してくることがあるので、その場合は剥がす
+    const cleanedText = rawText
+      .replace(/^\s*```(?:json)?\s*/i, '')
+      .replace(/\s*```\s*$/, '')
+      .trim();
+
     let parsed;
     try {
-      parsed = JSON.parse(rawText);
+      parsed = JSON.parse(cleanedText);
     } catch (e) {
       parsed = { improvedCode: '', promptHint: '', explanation: rawText };
     }
