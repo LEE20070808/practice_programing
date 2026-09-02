@@ -532,4 +532,539 @@ function runTest() {
     ],
     starter: ''
   },
+  {
+    id: 20,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '秒を分と秒に直す',
+    summary: '割り算の商と余りを使って、秒数を「何分何秒」に変換します。',
+    statement:
+      '標準入力から整数 N（秒数）が1行で与えられます。' +
+      'これを「何分何秒」に直して、分と秒を半角スペース区切りで1行に出力してください。<br><br>' +
+      '例えば N が <code>125</code> のとき、125秒は2分5秒なので <code>2 5</code> と出力します。',
+    constraints: '0 ≤ N ≤ 100000',
+    samples: [
+      { input: '125', output: '2 5' },
+      { input: '60', output: '1 0' }
+    ],
+    testCases: [
+      { input: '125', output: '2 5' },
+      { input: '60', output: '1 0' },
+      { input: '59', output: '0 59' },
+      { input: '3661', output: '61 1' }
+    ],
+    starter: ''
+  },
+  {
+    id: 21,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '文字列を逆さまにする',
+    summary: '受け取った文字列を逆順にして出力します。スライスの練習です。',
+    statement:
+      '標準入力から文字列 S が1行で与えられます。' +
+      'S を逆から並べた文字列を、1行で出力してください。<br><br>' +
+      '例えば S が <code>hello</code> のとき、答えは <code>olleh</code> です。',
+    constraints: '1 ≤ Sの長さ ≤ 100（Sは英小文字のみ）',
+    samples: [
+      { input: 'hello', output: 'olleh' },
+      { input: 'abc', output: 'cba' }
+    ],
+    testCases: [
+      { input: 'hello', output: 'olleh' },
+      { input: 'abc', output: 'cba' },
+      { input: 'a', output: 'a' },
+      { input: 'codedrill', output: 'llirdedoc' }
+    ],
+    starter: ''
+  },
+  {
+    id: 22,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '2つの数の差',
+    summary: '2つの整数の差を、マイナスにならない形で出力します。',
+    statement:
+      '標準入力から、半角スペース区切りで2つの整数 A, B が1行で与えられます。' +
+      'A と B の差を出力してください。ただし答えは<strong>必ず0以上</strong>になるようにします。<br><br>' +
+      '例えば A が <code>3</code>、B が <code>8</code> のとき、答えは <code>5</code> です。',
+    constraints: '1 ≤ A, B ≤ 1000',
+    samples: [
+      { input: '3 8', output: '5' },
+      { input: '10 4', output: '6' }
+    ],
+    testCases: [
+      { input: '3 8', output: '5' },
+      { input: '10 4', output: '6' },
+      { input: '7 7', output: '0' },
+      { input: '1 1000', output: '999' }
+    ],
+    starter: ''
+  },
+  {
+    id: 23,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '合計は偶数か奇数か',
+    summary: '2つの数を足した結果が偶数か奇数かを判定します。',
+    statement:
+      '標準入力から、半角スペース区切りで2つの整数 A, B が1行で与えられます。' +
+      'A + B が偶数なら <code>Even</code>、奇数なら <code>Odd</code> と1行で出力してください。',
+    constraints: '1 ≤ A, B ≤ 1000',
+    samples: [
+      { input: '3 5', output: 'Even' },
+      { input: '2 5', output: 'Odd' }
+    ],
+    testCases: [
+      { input: '3 5', output: 'Even' },
+      { input: '2 5', output: 'Odd' },
+      { input: '1 1', output: 'Even' },
+      { input: '100 7', output: 'Odd' }
+    ],
+    starter: ''
+  },
+  {
+    id: 24,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '初級',
+    title: '文字が何個あるか',
+    summary: '文字列の中に、指定された文字がいくつ含まれるかを数えます。',
+    statement:
+      '1行目に文字列 S、2行目に1文字 C が与えられます。' +
+      'S の中に C が何個含まれるかを、1行で出力してください。<br><br>' +
+      '例えば S が <code>banana</code>、C が <code>a</code> のとき、答えは <code>3</code> です。' +
+      '1個も含まれない場合は <code>0</code> と出力します。',
+    constraints: '1 ≤ Sの長さ ≤ 100（S, C は英小文字のみ）',
+    samples: [
+      { input: 'banana\na', output: '3' },
+      { input: 'hello\nl', output: '2' }
+    ],
+    testCases: [
+      { input: 'banana\na', output: '3' },
+      { input: 'hello\nl', output: '2' },
+      { input: 'abc\nz', output: '0' },
+      { input: 'aaaa\na', output: '4' }
+    ],
+    starter: ''
+  },
+  {
+    id: 25,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '最小値と最大値',
+    summary: 'リストの中で最も小さい値と最も大きい値を、まとめて出力します。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'この中の<strong>最小値と最大値</strong>を、この順で半角スペース区切りで1行に出力してください。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n3 1 4 1 5', output: '1 5' },
+      { input: '3\n10 2 7', output: '2 10' }
+    ],
+    testCases: [
+      { input: '5\n3 1 4 1 5', output: '1 5' },
+      { input: '3\n10 2 7', output: '2 10' },
+      { input: '1\n42', output: '42 42' },
+      { input: '4\n8 8 8 8', output: '8 8' }
+    ],
+    starter: ''
+  },
+  {
+    id: 26,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '単語の数を数える',
+    summary: 'スペースで区切られた文の中に、単語がいくつあるかを数えます。',
+    statement:
+      '標準入力から、半角スペースで区切られた英単語の列が1行で与えられます。' +
+      '単語がいくつあるかを、1行で出力してください。<br><br>' +
+      '例えば <code>I love python</code> のとき、単語は3つなので <code>3</code> と出力します。',
+    constraints: '1 ≤ 全体の長さ ≤ 200、単語数は1以上',
+    samples: [
+      { input: 'I love python', output: '3' },
+      { input: 'hello', output: '1' }
+    ],
+    testCases: [
+      { input: 'I love python', output: '3' },
+      { input: 'hello', output: '1' },
+      { input: 'a b c d e', output: '5' },
+      { input: 'one two', output: '2' }
+    ],
+    starter: ''
+  },
+  {
+    id: 27,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '九九の段を出力する',
+    summary: '複数行にわたって出力する練習です。ループの基本を確認します。',
+    statement:
+      '標準入力から整数 N が1行で与えられます。' +
+      'N の段の九九、つまり N×1 から N×9 までの結果を、<strong>1行に1つずつ、9行にわたって</strong>出力してください。<br><br>' +
+      '例えば N が <code>3</code> のとき、<code>3</code>、<code>6</code>、<code>9</code> …と <code>27</code> まで9行出力します。',
+    constraints: '1 ≤ N ≤ 9',
+    samples: [
+      { input: '3', output: '3\n6\n9\n12\n15\n18\n21\n24\n27' },
+      { input: '1', output: '1\n2\n3\n4\n5\n6\n7\n8\n9' }
+    ],
+    testCases: [
+      { input: '3', output: '3\n6\n9\n12\n15\n18\n21\n24\n27' },
+      { input: '1', output: '1\n2\n3\n4\n5\n6\n7\n8\n9' },
+      { input: '9', output: '9\n18\n27\n36\n45\n54\n63\n72\n81' },
+      { input: '5', output: '5\n10\n15\n20\n25\n30\n35\n40\n45' }
+    ],
+    starter: ''
+  },
+  {
+    id: 28,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '基準以上の個数',
+    summary: '条件に当てはまる要素だけを数えます。ループと条件分岐の組み合わせです。',
+    statement:
+      '1行目に整数 N と K が半角スペース区切りで与えられます。' +
+      '2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'この中で <strong>K 以上</strong>のものがいくつあるかを、1行で出力してください。<br><br>' +
+      '例えば N=5, K=3 で数列が <code>1 2 3 4 5</code> のとき、3以上は 3, 4, 5 の3つなので <code>3</code> と出力します。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ K ≤ 1000、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5 3\n1 2 3 4 5', output: '3' },
+      { input: '3 10\n1 2 3', output: '0' }
+    ],
+    testCases: [
+      { input: '5 3\n1 2 3 4 5', output: '3' },
+      { input: '3 10\n1 2 3', output: '0' },
+      { input: '4 1\n1 1 1 1', output: '4' },
+      { input: '6 50\n10 50 90 30 70 50', output: '4' }
+    ],
+    starter: ''
+  },
+  {
+    id: 29,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '種類はいくつあるか',
+    summary: '同じ値をまとめて数えると何種類になるかを求めます。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'この中に<strong>何種類</strong>の数があるかを、1行で出力してください。' +
+      '同じ数が何回出てきても、1種類として数えます。<br><br>' +
+      '例えば <code>1 2 2 3 3</code> のとき、種類は 1, 2, 3 の3つなので <code>3</code> と出力します。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n1 2 2 3 3', output: '3' },
+      { input: '4\n1 1 1 1', output: '1' }
+    ],
+    testCases: [
+      { input: '5\n1 2 2 3 3', output: '3' },
+      { input: '4\n1 1 1 1', output: '1' },
+      { input: '3\n5 6 7', output: '3' },
+      { input: '6\n1 2 3 1 2 3', output: '3' }
+    ],
+    starter: ''
+  },
+  {
+    id: 30,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '数列を逆順にする',
+    summary: '受け取った数列を逆から並べ直して出力します。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'これらを<strong>逆の順番</strong>にして、半角スペース区切りで1行に出力してください。<br><br>' +
+      '例えば <code>1 2 3 4 5</code> のとき、答えは <code>5 4 3 2 1</code> です。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n1 2 3 4 5', output: '5 4 3 2 1' },
+      { input: '3\n10 20 30', output: '30 20 10' }
+    ],
+    testCases: [
+      { input: '5\n1 2 3 4 5', output: '5 4 3 2 1' },
+      { input: '3\n10 20 30', output: '30 20 10' },
+      { input: '1\n7', output: '7' },
+      { input: '4\n1 1 2 2', output: '2 2 1 1' }
+    ],
+    starter: ''
+  },
+  {
+    id: 31,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '母音の数を数える',
+    summary: '文字列の中に母音がいくつ含まれるかを数えます。',
+    statement:
+      '標準入力から文字列 S が1行で与えられます。' +
+      'S の中に含まれる母音（<code>a</code>, <code>i</code>, <code>u</code>, <code>e</code>, <code>o</code>）の個数を、1行で出力してください。<br><br>' +
+      '例えば <code>hello</code> には <code>e</code> と <code>o</code> があるので、答えは <code>2</code> です。',
+    constraints: '1 ≤ Sの長さ ≤ 100（Sは英小文字のみ）',
+    samples: [
+      { input: 'hello', output: '2' },
+      { input: 'aeiou', output: '5' }
+    ],
+    testCases: [
+      { input: 'hello', output: '2' },
+      { input: 'aeiou', output: '5' },
+      { input: 'xyz', output: '0' },
+      { input: 'programming', output: '3' }
+    ],
+    starter: ''
+  },
+  {
+    id: 32,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: 'FizzBuzz',
+    summary: 'プログラミング学習で最も有名な問題のひとつです。条件分岐の順番がポイントになります。',
+    statement:
+      '標準入力から整数 N が1行で与えられます。' +
+      '1 から N までの整数について、次のルールで<strong>1行に1つずつ</strong>出力してください。<br><br>' +
+      '・3でも5でも割り切れるなら <code>FizzBuzz</code><br>' +
+      '・3で割り切れるなら <code>Fizz</code><br>' +
+      '・5で割り切れるなら <code>Buzz</code><br>' +
+      '・どれでもなければ、その数をそのまま',
+    constraints: '1 ≤ N ≤ 100',
+    samples: [
+      { input: '5', output: '1\n2\nFizz\n4\nBuzz' },
+      { input: '3', output: '1\n2\nFizz' }
+    ],
+    testCases: [
+      { input: '15', output: '1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz' },
+      { input: '3', output: '1\n2\nFizz' },
+      { input: '5', output: '1\n2\nFizz\n4\nBuzz' },
+      { input: '1', output: '1' }
+    ],
+    starter: ''
+  },
+  {
+    id: 33,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '2番目に大きい値',
+    summary: '重複を除いたうえで、2番目に大きい値を求めます。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'この中で<strong>2番目に大きい値</strong>を1行で出力してください。<br><br>' +
+      '同じ値が複数ある場合は<strong>1つとして数えます</strong>。' +
+      '例えば <code>5 5 3 1</code> のとき、大きい順に 5, 3, 1 なので、答えは <code>3</code> です。',
+    constraints: '2 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000（異なる値が2種類以上あることが保証されます）',
+    samples: [
+      { input: '5\n3 1 4 1 5', output: '4' },
+      { input: '4\n5 5 3 1', output: '3' }
+    ],
+    testCases: [
+      { input: '5\n3 1 4 1 5', output: '4' },
+      { input: '3\n10 2 7', output: '7' },
+      { input: '4\n5 5 3 1', output: '3' },
+      { input: '2\n100 1', output: '1' }
+    ],
+    starter: ''
+  },
+  {
+    id: 34,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '各桁の数字の合計',
+    summary: '数を1桁ずつに分けて足し合わせます。文字列として扱うのがコツです。',
+    statement:
+      '標準入力から整数 N が1行で与えられます。' +
+      'N の<strong>各桁の数字を合計した値</strong>を、1行で出力してください。<br><br>' +
+      '例えば N が <code>123</code> のとき、1 + 2 + 3 = 6 なので <code>6</code> と出力します。',
+    constraints: '1 ≤ N ≤ 1000000000',
+    samples: [
+      { input: '123', output: '6' },
+      { input: '9', output: '9' }
+    ],
+    testCases: [
+      { input: '123', output: '6' },
+      { input: '9', output: '9' },
+      { input: '1000', output: '1' },
+      { input: '987654321', output: '45' }
+    ],
+    starter: ''
+  },
+  {
+    id: 35,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '小さい順に並べ替える',
+    summary: '数列を昇順に並べ替えて出力します。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'これらを<strong>小さい順</strong>に並べ替えて、半角スペース区切りで1行に出力してください。<br><br>' +
+      '同じ値が複数あっても、そのまま全部出力します。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n3 1 4 1 5', output: '1 1 3 4 5' },
+      { input: '3\n10 2 7', output: '2 7 10' }
+    ],
+    testCases: [
+      { input: '5\n3 1 4 1 5', output: '1 1 3 4 5' },
+      { input: '3\n10 2 7', output: '2 7 10' },
+      { input: '1\n42', output: '42' },
+      { input: '4\n4 3 2 1', output: '1 2 3 4' }
+    ],
+    starter: ''
+  },
+  {
+    id: 36,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '中級',
+    title: '指定した数はいくつあるか',
+    summary: '数列の中に、特定の値が何回出てくるかを数えます。',
+    statement:
+      '1行目に整数 N と X が半角スペース区切りで与えられます。' +
+      '2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      'この中に X が<strong>何個含まれるか</strong>を、1行で出力してください。' +
+      '1個もない場合は <code>0</code> と出力します。',
+    constraints: '1 ≤ N ≤ 100、0 ≤ X ≤ 1000、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5 2\n1 2 2 3 2', output: '3' },
+      { input: '3 9\n1 2 3', output: '0' }
+    ],
+    testCases: [
+      { input: '5 2\n1 2 2 3 2', output: '3' },
+      { input: '3 9\n1 2 3', output: '0' },
+      { input: '4 1\n1 1 1 1', output: '4' },
+      { input: '6 50\n10 50 90 30 70 50', output: '2' }
+    ],
+    starter: ''
+  },
+  {
+    id: 37,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '上級',
+    title: '指定した区間の合計',
+    summary: '数列の一部だけを取り出して合計します。入力が3行になる問題です。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      '3行目に整数 L と R が半角スペース区切りで与えられます。<br><br>' +
+      '数列の<strong>L 番目から R 番目まで</strong>（両端を含む）の合計を、1行で出力してください。先頭を1番目と数えます。<br><br>' +
+      '例えば数列が <code>1 2 3 4 5</code> で L=2, R=4 のとき、2 + 3 + 4 = 9 なので <code>9</code> と出力します。',
+    constraints: '1 ≤ N ≤ 100、1 ≤ L ≤ R ≤ N、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n1 2 3 4 5\n2 4', output: '9' },
+      { input: '3\n10 20 30\n1 3', output: '60' }
+    ],
+    testCases: [
+      { input: '5\n1 2 3 4 5\n2 4', output: '9' },
+      { input: '3\n10 20 30\n1 3', output: '60' },
+      { input: '4\n1 1 1 1\n2 2', output: '1' },
+      { input: '5\n5 4 3 2 1\n1 5', output: '15' }
+    ],
+    starter: ''
+  },
+  {
+    id: 38,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '上級',
+    title: '同じ文字が続く最大の長さ',
+    summary: '連続して同じ文字が並んでいる部分のうち、最も長いものの長さを求めます。',
+    statement:
+      '標準入力から文字列 S が1行で与えられます。' +
+      'S の中で<strong>同じ文字が連続している部分</strong>のうち、最も長いものの長さを1行で出力してください。<br><br>' +
+      '例えば <code>aabbbcc</code> のとき、<code>bbb</code> が3文字で最長なので <code>3</code> と出力します。' +
+      '同じ文字が1つも連続していない場合は <code>1</code> になります。',
+    constraints: '1 ≤ Sの長さ ≤ 100（Sは英小文字のみ）',
+    samples: [
+      { input: 'aabbbcc', output: '3' },
+      { input: 'abc', output: '1' }
+    ],
+    testCases: [
+      { input: 'aabbbcc', output: '3' },
+      { input: 'abc', output: '1' },
+      { input: 'aaaa', output: '4' },
+      { input: 'abbbba', output: '4' }
+    ],
+    starter: ''
+  },
+  {
+    id: 39,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '上級',
+    title: '両方に出てくる数',
+    summary: '2つの数列に共通して現れる数が何種類あるかを求めます。',
+    statement:
+      '1行目に整数 N と M が半角スペース区切りで与えられます。' +
+      '2行目に N 個の整数、3行目に M 個の整数が、それぞれ半角スペース区切りで与えられます。<br><br>' +
+      '<strong>両方の数列に登場する数</strong>が何種類あるかを、1行で出力してください。' +
+      '同じ数が何回出てきても、1種類として数えます。<br><br>' +
+      '例えば <code>1 2 3</code> と <code>2 3 4</code> のとき、共通するのは 2 と 3 なので <code>2</code> と出力します。',
+    constraints: '1 ≤ N, M ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '3 3\n1 2 3\n2 3 4', output: '2' },
+      { input: '2 2\n1 2\n3 4', output: '0' }
+    ],
+    testCases: [
+      { input: '3 3\n1 2 3\n2 3 4', output: '2' },
+      { input: '2 2\n1 2\n3 4', output: '0' },
+      { input: '3 2\n5 5 5\n5 9', output: '1' },
+      { input: '4 4\n1 2 3 4\n1 2 3 4', output: '4' }
+    ],
+    starter: ''
+  },
+  {
+    id: 40,
+    language: 'python',
+    type: 'io',
+    tag: 'Python ・ 標準入出力',
+    difficulty: '上級',
+    title: '隣り合う2つの最大の和',
+    summary: '隣り合った2つの要素の組み合わせの中で、合計が最も大きいものを求めます。',
+    statement:
+      '1行目に整数 N、2行目に N 個の整数が半角スペース区切りで与えられます。' +
+      '<strong>隣り合う2つの要素</strong>を足したもののうち、最も大きい値を1行で出力してください。<br><br>' +
+      '例えば <code>1 2 3 4 5</code> のとき、隣り合う和は 3, 5, 7, 9 なので、答えは <code>9</code> です。',
+    constraints: '2 ≤ N ≤ 100、0 ≤ 各要素 ≤ 1000',
+    samples: [
+      { input: '5\n1 2 3 4 5', output: '9' },
+      { input: '3\n10 1 10', output: '11' }
+    ],
+    testCases: [
+      { input: '5\n1 2 3 4 5', output: '9' },
+      { input: '3\n10 1 10', output: '11' },
+      { input: '2\n7 8', output: '15' },
+      { input: '6\n1 9 9 1 1 1', output: '18' }
+    ],
+    starter: ''
+  },
 ];
