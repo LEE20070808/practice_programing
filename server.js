@@ -48,7 +48,7 @@ app.use(session({
   }
 }));
 
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Googleのログインページへリダイレクトする
 app.get('/auth/google', (req, res) => {
