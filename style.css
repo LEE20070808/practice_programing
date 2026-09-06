@@ -947,6 +947,57 @@ button {
 @media (max-width: 640px) {
   .datetime { display: none; }
   .container { padding: 28px 16px 48px; }
+
+  /* 横方向のはみ出しを止める（bodyだけに限定する） */
+  body { overflow-x: hidden; }
+
+  /* コードブロックは自分の中だけでスクロールさせる */
+  pre, .code-block {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  /* エディタはスマホでは低めに */
+  .CodeMirror { height: 220px; }
+
+  /* ヘッダーを詰める */
+  .brand { font-size: 15px; }
+  .streak { font-size: 11px; padding: 4px 8px; }
+  .topbar-right { gap: 8px; min-width: 0; }
+
+  /* ボタンの文字を折り返さない */
+  .auth-area button,
+  .auth-area a {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+    /* テストケース結果を縦積みにする */
+  .io-case-grid,
+  .io-case-body {
+    grid-template-columns: 1fr;
+  }
+
+    /* CodeMirrorが残した元のtextareaがページを広げるのを防ぐ */
+  .CodeMirror + textarea,
+  .problem-layout textarea {
+    display: none;
+  }
+
+  /* テストケース結果を縦積みにする */
+  .io-case-body {
+    grid-template-columns: 1fr;
+  }
+    /* グリッドの子が中身に押し広げられるのを防ぐ */
+  .problem-layout > * {
+    min-width: 0;
+  }
+
+  /* 長いコードは枠内でスクロールさせる */
+  .code-block {
+    overflow-x: auto;
+  }
 }
 
 /* ---------- Onboarding (初回ログイン時のスライド) ---------- */
