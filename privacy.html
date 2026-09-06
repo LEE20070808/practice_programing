@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プライバシーポリシー | CodeDrill</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .legal-body { max-width: 760px; }
+    .legal-body h2 {
+      font-size: 17px;
+      margin: 36px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .legal-body h2:first-of-type { margin-top: 8px; }
+    .legal-body p,
+    .legal-body li {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.9;
+    }
+    .legal-body ul { margin: 10px 0 10px 20px; }
+    .legal-body li { margin-bottom: 6px; }
+    .legal-meta {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+    .legal-back {
+      display: inline-block;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .legal-back:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">Code<strong>Drill</strong></div>
+  </div>
+  <div class="topbar-right">
+    <span class="datetime" id="datetime"></span>
+    <span class="streak">day_streak: <strong id="streakValue">--</strong></span>
+    <div id="authArea" class="auth-area"></div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">navigation</div>
+  <nav>
+    <a href="index.html"><span class="prompt">$</span> home</a>
+    <a href="problem-list.html"><span class="prompt">$</span> problem</a>
+    <a href="history.html"><span class="prompt">$</span> history</a>
+    <a href="settings.html"><span class="prompt">$</span> settings</a>
+    <a href="terms.html"><span class="prompt">$</span> terms</a>
+    <a href="privacy.html" class="active"><span class="prompt">$</span> privacy</a>
+  </nav>
+</aside>
+
+  <div class="page">
+    <div class="container">
+      <div class="page-heading">
+        <h1>プライバシーポリシー</h1>
+        <p>CodeDrill における個人情報の取り扱いについて定めます。</p>
+      </div>
+
+      <div class="legal-body">
+        <h2>1. 取得する情報</h2>
+        <p>CodeDrill（以下「本サービス」）では、以下の情報を取得します。</p>
+        <ul>
+          <li><strong>Googleアカウント情報</strong> — Googleログインを利用された際に、氏名、メールアドレス、プロフィール画像、およびGoogleが発行するアカウント識別子を取得します。パスワードを取得することはありません。</li>
+          <li><strong>学習に関する情報</strong> — 正解した問題とその日時、連続ログイン日数、最終ログイン日、初回案内の表示状況。</li>
+          <li><strong>AIレビューの利用回数</strong> — 1日あたりの利用回数を記録します。</li>
+          <li><strong>接続に関する情報</strong> — サーバーの動作記録として、アクセス日時やIPアドレスなどが一時的に記録されることがあります。</li>
+        </ul>
+
+        <h2>2. 利用目的</h2>
+        <p>取得した情報は、以下の目的でのみ利用します。</p>
+        <ul>
+          <li>ログイン状態の維持およびアカウントの識別</li>
+            <li>学習履歴、連続ログイン日数などの表示</li>
+          <li>AIレビュー機能の利用回数の管理および不正利用の防止</li>
+          <li>本サービスの安定した運営、障害の調査および改善</li>
+        </ul>
+
+        <h2>3. AIレビュー機能における外部送信について</h2>
+        <p>本サービスのAIレビュー機能をご利用いただいた場合、入力されたコード、問題のタイトル、および言語の種別が、Anthropic PBC の提供するAPIへ送信されます。これは、コードの改善案を生成するために必要な処理です。</p>
+        <p>送信されたコードを本サービスのデータベースに保存することはありません。送信先における取り扱いについては、Anthropic PBC の定めるプライバシーポリシーをご確認ください。</p>
+        <p>コードに、氏名、住所、パスワード、その他の個人情報や機密情報を含めないようご注意ください。</p>
+
+        <h2>4. コードの実行について</h2>
+        <p>本サービスでは、利用者が記述したコードを、利用者ご自身のブラウザ内で実行しています。コードがプログラムの実行のためにサーバーへ送信されることはありません。ただし、前条のAIレビュー機能をご利用いただいた場合を除きます。</p>
+
+        <h2>5. Cookie の利用について</h2>
+        <p>本サービスでは、ログイン状態を保持する目的で Cookie を使用しています。この Cookie には、セッションを識別するための文字列のみが含まれます。</p>
+        <p>ブラウザの設定により Cookie を無効にすることができますが、その場合ログイン機能をご利用いただけません。</p>
+
+        <h2>6. 外部サービスの利用</h2>
+        <p>本サービスは、以下の外部サービスを利用しています。これらのサービスの提供者に対し、利用者のIPアドレスやブラウザの情報が送信される場合があります。</p>
+        <ul>
+          <li>Google LLC（ログイン機能、ウェブフォントの配信）</li>
+          <li>Anthropic PBC（AIレビュー機能）</li>
+          <li>Cloudflare, Inc.（スクリプトの配信）</li>
+        </ul>
+
+        <h2>7. 第三者への提供</h2>
+        <p>取得した個人情報を、前各条に定める場合を除き、あらかじめ利用者の同意を得ることなく第三者へ提供することはありません。ただし、法令に基づく開示請求があった場合はこの限りではありません。</p>
+        <p>また、取得した情報を広告目的で利用したり、第三者へ販売したりすることはありません。</p>
+
+        <h2>8. 情報の管理</h2>
+        <p>取得した情報は、暗号化された通信経路（HTTPS）を通じて送受信され、適切なアクセス制限を設けたサーバー上で管理されます。</p>
+
+        <h2>9. 情報の開示・削除の請求</h2>
+        <p>ご自身の情報の開示、訂正、または削除をご希望の場合は、末尾に記載する連絡先までご連絡ください。ご本人であることを確認のうえ、速やかに対応いたします。</p>
+
+        <h2>10. 本ポリシーの変更</h2>
+        <p>本ポリシーの内容は、必要に応じて変更することがあります。変更後の内容は、本ページに掲載した時点から効力を生じるものとします。重要な変更を行う場合は、本サービス上でお知らせします。</p>
+
+        <h2>11. お問い合わせ</h2>
+        <p>本ポリシーに関するお問い合わせは、以下までご連絡ください。</p>
+        <ul>
+          <li>運営者： CodeDrill運営</li>
+          <li>連絡先： codedrills.jp@gmail.com</li>
+        </ul>
+
+        <div class="legal-meta">
+          制定日： 2026年9月6日
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>利用規約 | CodeDrill</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .legal-body { max-width: 760px; }
+    .legal-body h2 {
+      font-size: 17px;
+      margin: 36px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .legal-body h2:first-of-type { margin-top: 8px; }
+    .legal-body p,
+    .legal-body li {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.9;
+    }
+    .legal-body ul { margin: 10px 0 10px 20px; }
+    .legal-body li { margin-bottom: 6px; }
+    .legal-meta {
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+    .legal-back {
+      display: inline-block;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .legal-back:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">Code<strong>Drill</strong></div>
+  </div>
+  <div class="topbar-right">
+    <span class="datetime" id="datetime"></span>
+    <span class="streak">day_streak: <strong id="streakValue">--</strong></span>
+    <div id="authArea" class="auth-area"></div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">navigation</div>
+  <nav>
+    <a href="index.html"><span class="prompt">$</span> home</a>
+    <a href="problem-list.html"><span class="prompt">$</span> problem</a>
+    <a href="history.html"><span class="prompt">$</span> history</a>
+    <a href="settings.html"><span class="prompt">$</span> settings</a>
+    <a href="terms.html" class="active"><span class="prompt">$</span> terms</a>
+    <a href="privacy.html"><span class="prompt">$</span> privacy</a>
+  </nav>
+</aside>
+
+  <div class="page">
+    <div class="container">
+      <div class="page-heading">
+        <h1>利用規約</h1>
+        <p>CodeDrill をご利用いただく際の条件を定めます。</p>
+      </div>
+
+      <div class="legal-body">
+        <h2>第1条（適用）</h2>
+        <p>本規約は、CodeDrill（以下「本サービス」）の利用に関する条件を、利用者と運営者との間で定めるものです。本サービスを利用された時点で、本規約に同意したものとみなします。</p>
+
+        <h2>第2条（サービスの内容）</h2>
+        <p>本サービスは、プログラミングの学習を目的として、練習問題およびその解答環境、ならびにAIによるコードの改善提案機能を提供します。</p>
+        <p>本サービスは、学習を支援することを目的としており、特定の試験の合格、技能の習得、就職その他の成果を保証するものではありません。</p>
+
+        <h2>第3条（アカウント）</h2>
+        <p>本サービスの一部の機能は、Googleアカウントによるログインを必要とします。</p>
+        <ul>
+          <li>利用者は、自身のアカウントを適切に管理する責任を負うものとします。</li>
+          <li>複数のアカウントを作成し、利用回数の制限を回避する行為を行ってはなりません。</li>
+          <li>アカウントの削除をご希望の場合は、第10条に記載する連絡先までご連絡ください。</li>
+        </ul>
+
+        <h2>第4条（AIレビュー機能）</h2>
+        <p>AIレビュー機能は、外部のAIサービスを利用して、コードの改善案を生成する機能です。</p>
+        <ul>
+          <li>生成される内容は、正確性、完全性、有用性を保証するものではありません。内容の採否は利用者ご自身の判断で行ってください。</li>
+          <li>本機能には、1日あたりの利用回数および短時間あたりの利用回数に上限を設けています。</li>
+          <li>入力されたコードは外部のAIサービスへ送信されます。個人情報や機密情報を含めないでください。詳細はプライバシーポリシーをご確認ください。</li>
+        </ul>
+
+        <h2>第5条（禁止事項）</h2>
+        <p>利用者は、本サービスの利用にあたり、以下の行為を行ってはなりません。</p>
+        <ul>
+          <li>法令または公序良俗に反する行為</li>
+          <li>本サービスのサーバーまたはネットワークに、過度な負荷をかける行為</li>
+          <li>自動化された手段により、本サービスへ大量のアクセスを行う行為</li>
+          <li>本サービスの不具合を意図的に利用し、または不正にアクセスする行為</li>
+          <li>他の利用者または第三者の権利を侵害する行為</li>
+          <li>本サービスの運営を妨害する行為</li>
+          <li>その他、運営者が不適切と判断する行為</li>
+        </ul>
+
+        <h2>第6条（知的財産権）</h2>
+        <p>本サービスに掲載されている問題文、解説、その他のコンテンツに関する権利は、運営者に帰属します。</p>
+        <p>利用者が本サービス上で記述したコードに関する権利は、利用者に帰属します。</p>
+
+        <h2>第7条（サービスの変更・中断・終了）</h2>
+        <p>運営者は、利用者への事前の通知なく、本サービスの内容を変更し、または提供を中断・終了することがあります。</p>
+        <p>これにより利用者に生じた損害について、運営者は責任を負いません。ただし、サービスを終了する場合には、可能な限り事前にお知らせするよう努めます。</p>
+
+        <h2>第8条（免責）</h2>
+        <p>運営者は、本サービスの内容の正確性、有用性、特定の目的への適合性について、いかなる保証も行いません。</p>
+        <p>本サービスの利用により利用者に生じた損害について、運営者に故意または重大な過失がある場合を除き、責任を負わないものとします。</p>
+        <p>本サービスは、個人により無償で運営されています。障害の復旧やお問い合わせへの対応には、時間を要する場合があります。</p>
+
+        <h2>第9条（規約の変更）</h2>
+        <p>運営者は、必要と判断した場合、本規約を変更することがあります。変更後の規約は、本ページに掲載した時点から効力を生じるものとします。</p>
+
+        <h2>第10条（お問い合わせ）</h2>
+        <p>本規約に関するお問い合わせは、以下までご連絡ください。</p>
+        <ul>
+          <li>運営者： CodeDrill運営</li>
+          <li>連絡先： codedrills.jp@gmail.com</li>
+        </ul>
+
+        <div class="legal-meta">
+          制定日： 2026年9月6日
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
