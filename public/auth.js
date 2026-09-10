@@ -6,12 +6,31 @@
   }
 
   function renderLoggedIn(container, user) {
-    container.innerHTML = `
-      <div class="user-menu">
-        <img class="avatar-img" src="${user.picture}" alt="${user.name}">
-        <button class="logout-btn" id="logoutBtn" type="button">ログアウト</button>
-      </div>
-    `;
+    // 表示名や画像URLは外部（Googleアカウント）由来なので、
+    // innerHTML に埋め込まず DOM API で組み立てる。
+    container.innerHTML = '';
+
+    const menu = document.createElement('div');
+    menu.className = 'user-menu';
+
+    const img = document.createElement('img');
+    img.className = 'avatar-img';
+    // http(s) の画像URL以外は読み込まない
+    if (/^https?:\/\//.test(user.picture || '')) {
+      img.src = user.picture;
+    }
+    img.alt = user.name || 'ユーザー';
+
+    const btn = document.createElement('button');
+    btn.className = 'logout-btn';
+    btn.id = 'logoutBtn';
+    btn.type = 'button';
+    btn.textContent = 'ログアウト';
+
+    menu.appendChild(img);
+    menu.appendChild(btn);
+    container.appendChild(menu);
+
     document.getElementById('logoutBtn').addEventListener('click', () => {
       fetch('/api/logout', { method: 'POST', credentials: 'include' })
         .then(() => location.reload());

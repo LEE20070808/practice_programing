@@ -76,11 +76,24 @@
         </div>
 
         <div class="panel ai-review-panel">
-          <p class="subheading">AIレビュー</p>
+          <p class="subheading">AIレビュー（プロンプト練習）</p>
           <p class="ai-review-desc">
-            AIに書いてもらったコードを貼り付けて送ると、より良い書き方の例と、そのコードを引き出すためのプロンプトのヒントがもらえます。
+            コードはChatGPTやClaudeに出させたものを貼って構いません。<br>
+            ここでの本番は「次にAIへ出す指示」です。評価軸は1つだけ見て、弱点・指示の穴・改善例を返します。<br>
+            テストに1つも通っていない状態ではレビューできません。
           </p>
-          <button class="ai-review-btn" id="aiReviewBtn" type="button">🤖 AIにレビューしてもらう</button>
+          <label class="ai-field-label" for="reviewAxis">今回見る軸</label>
+          <select id="reviewAxis" class="ai-axis-select">
+            <option value="readable">読みやすさ</option>
+            <option value="robust">壊れにくさ</option>
+            <option value="specific">指示の具体性</option>
+          </select>
+          <label class="ai-field-label" for="userPromptInput">次にAIへ出す指示（空でも可）</label>
+          <textarea id="userPromptInput" class="ai-prompt-input" rows="5" spellcheck="false" placeholder="例: JavaScriptで、入力が空のときは追加せず、liを作って#itemListに足し、入力欄を空にしてください。他の要素は触らないでください。"></textarea>
+          <div class="editor-actions">
+            <button class="ai-review-btn" id="aiReviewBtn" type="button" disabled>指示をレビューする</button>
+            <span class="ai-review-gate" id="aiReviewGate">先にコードを実行し、テストを1つ以上通してください。</span>
+          </div>
           <div class="ai-review-result" id="aiReviewResult"></div>
         </div>
       </div>

@@ -65,6 +65,26 @@
   }
 
   let alreadyMarkedSolved = false;
+  let passedCaseCount = 0;
+  let testsHaveRun = false;
+
+  function updateReviewGate() {
+    const btn = document.getElementById('aiReviewBtn');
+    const gate = document.getElementById('aiReviewGate');
+    const ok = testsHaveRun && passedCaseCount >= 1;
+    if (btn && btn.textContent !== 'AIが確認中…') {
+      btn.disabled = !ok;
+    }
+    if (gate) {
+      gate.hidden = !!ok;
+      if (!testsHaveRun) {
+        gate.textContent = '先にコードを実行し、テストを1つ以上通してください。';
+      } else if (passedCaseCount < 1) {
+        gate.textContent = 'テストに1つも通っていないので、レビューできません。';
+      }
+    }
+  }
+
   function markSolvedOnce() {
     if (alreadyMarkedSolved) return;
     alreadyMarkedSolved = true;
@@ -143,6 +163,7 @@ _result = _stdout.getvalue()
       try {
         const pyodide = await ensurePyodide();
         let allPassed = true;
+        let passedCount = 0;
         const rows = [];
 
         for (let i = 0; i < testCases.length; i++) {
@@ -155,6 +176,7 @@ _result = _stdout.getvalue()
           } else {
             passed = normalize(output) === normalize(tc.output);
           }
+          if (passed) passedCount += 1;
           if (!passed) allPassed = false;
 
           rows.push(`
@@ -174,6 +196,10 @@ _result = _stdout.getvalue()
 
         ioCasesEl.innerHTML = rows.join('');
 
+        testsHaveRun = true;
+        passedCaseCount = passedCount;
+        updateReviewGate();
+
         testResult.classList.add('show');
         if (allPassed) {
           testResult.classList.add('test-pass');
@@ -187,6 +213,9 @@ _result = _stdout.getvalue()
         }
       } catch (err) {
         ioCasesEl.innerHTML = '';
+        testsHaveRun = true;
+        passedCaseCount = 0;
+        updateReviewGate();
         testResult.classList.add('show', 'test-fail');
         testResult.textContent = 'Pythonの実行環境の読み込みに失敗しました。時間をおいて再度お試しください。';
         console.error(err);
@@ -311,6 +340,9 @@ try {
       if (!testResult || !hasRunManually) return;
 
       testResult.classList.add('show');
+      testsHaveRun = true;
+      passedCaseCount = event.data.passed ? 1 : 0;
+      updateReviewGate();
       if (event.data.passed) {
         testResult.classList.add('test-pass');
         testResult.classList.remove('test-fail');
@@ -334,60 +366,83 @@ try {
   // --- AIレビュー（JS/Python共通） ---
   const aiReviewBtn = document.getElementById('aiReviewBtn');
   const aiReviewResult = document.getElementById('aiReviewResult');
+  const userPromptInput = document.getElementById('userPromptInput');
+  const reviewAxis = document.getElementById('reviewAxis');
+
+  function renderReview(data) {
+    const weaknessHtml = data.weakness
+      ? `<p class="subheading">この軸での弱点</p><p class="ai-review-text">${escapeHtml(data.weakness)}</p>`
+      : '';
+    const gapHtml = data.promptGap
+      ? `<p class="subheading">指示の穴</p><p class="ai-review-text">${escapeHtml(data.promptGap)}</p>`
+      : '';
+    const hintHtml = data.promptHint
+      ? `<p class="subheading">次に出すプロンプト例</p><p class="ai-review-text">${escapeHtml(data.promptHint)}</p>`
+      : '';
+    const explanationHtml = data.explanation
+      ? `<p class="subheading">なぜそう言えるか</p><p class="ai-review-text">${escapeHtml(data.explanation)}</p>`
+      : '';
+    const codeHtml = data.improvedCode
+      ? `<p class="subheading">改善されたコード例</p><pre class="code-block"><code>${escapeHtml(data.improvedCode)}</code></pre>`
+      : '';
+
+    aiReviewResult.classList.add('show');
+    aiReviewResult.classList.remove('error');
+    aiReviewResult.innerHTML = weaknessHtml + gapHtml + hintHtml + explanationHtml + codeHtml;
+    if (typeof data.remaining === 'number') {
+      aiReviewResult.innerHTML += `<p class="ai-review-remaining">本日の残り回数: ${data.remaining} / ${data.dailyLimit}</p>`;
+    }
+    if (window.hljs) {
+      aiReviewResult.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
+    }
+  }
+
+  function requestReview() {
+    if (!aiReviewBtn) return;
+    if (!testsHaveRun || passedCaseCount < 1) {
+      updateReviewGate();
+      return;
+    }
+    aiReviewBtn.disabled = true;
+    aiReviewBtn.textContent = 'AIが確認中…';
+    aiReviewResult.classList.remove('show', 'error');
+    aiReviewResult.innerHTML = '';
+
+    fetch('/api/ai-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        problemId: problem.id,
+        code: getCode(),
+        language: problem.language,
+        title: problem.title,
+        userPrompt: userPromptInput ? userPromptInput.value : '',
+        axis: reviewAxis ? reviewAxis.value : 'readable',
+        revealCode: true
+      })
+    })
+      .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) {
+          aiReviewResult.classList.add('show', 'error');
+          aiReviewResult.textContent = data.error || 'AIレビューに失敗しました。';
+          return;
+        }
+        renderReview(data);
+      })
+      .catch(() => {
+        aiReviewResult.classList.add('show', 'error');
+        aiReviewResult.textContent = '通信エラーが発生しました。時間をおいて試してください。';
+      })
+      .finally(() => {
+        aiReviewBtn.textContent = '指示をレビューする';
+        updateReviewGate();
+      });
+  }
 
   if (aiReviewBtn) {
-    aiReviewBtn.addEventListener('click', () => {
-      aiReviewBtn.disabled = true;
-      aiReviewBtn.textContent = 'AIが確認中…';
-      aiReviewResult.classList.remove('show', 'error');
-      aiReviewResult.innerHTML = '';
-
-      fetch('/api/ai-review', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          problemId: problem.id,
-          code: getCode(),
-          language: problem.language,
-          title: problem.title
-        })
-      })
-        .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
-        .then(({ ok, data }) => {
-          if (!ok) {
-            aiReviewResult.classList.add('show', 'error');
-            aiReviewResult.textContent = data.error || 'AIレビューに失敗しました。';
-            return;
-          }
-
-          const improvedCodeHtml = data.improvedCode
-            ? `<p class="subheading">改善されたコード例</p><pre class="code-block"><code>${escapeHtml(data.improvedCode)}</code></pre>`
-            : '';
-          const promptHintHtml = data.promptHint
-            ? `<p class="subheading">プロンプトのヒント</p><p class="ai-review-text">${escapeHtml(data.promptHint)}</p>`
-            : '';
-          const explanationHtml = data.explanation
-            ? `<p class="subheading">何が改善されたか</p><p class="ai-review-text">${escapeHtml(data.explanation)}</p>`
-            : '';
-
-          aiReviewResult.classList.add('show');
-          aiReviewResult.innerHTML = explanationHtml + improvedCodeHtml + promptHintHtml;
-          if (typeof data.remaining === 'number') {
-            aiReviewResult.innerHTML += `<p class="ai-review-remaining">本日の残り回数: ${data.remaining} / ${data.dailyLimit}</p>`;
-          }
-          if (window.hljs) {
-            aiReviewResult.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
-          }
-        })
-        .catch(() => {
-          aiReviewResult.classList.add('show', 'error');
-          aiReviewResult.textContent = '通信エラーが発生しました。時間をおいて試してください。';
-        })
-        .finally(() => {
-          aiReviewBtn.disabled = false;
-          aiReviewBtn.textContent = '🤖 AIにレビューしてもらう';
-        });
-    });
+    aiReviewBtn.addEventListener('click', () => requestReview());
   }
+  updateReviewGate();
 })();

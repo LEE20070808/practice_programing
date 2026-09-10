@@ -705,6 +705,60 @@ button {
 
 /* ---------- AI Review ---------- */
 
+.ai-field-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin: 0 0 6px;
+}
+
+.ai-axis-select,
+.ai-prompt-input {
+  width: 100%;
+  background: var(--panel-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  margin: 0 0 14px;
+}
+
+.ai-axis-select {
+  padding: 8px 10px;
+}
+
+.ai-prompt-input {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.7;
+  padding: 12px 14px;
+}
+
+.ai-prompt-input:focus,
+.ai-axis-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ai-review-btn-secondary {
+  margin-left: 8px;
+}
+
+.ai-review-remaining {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  margin: 0;
+}
+
+.ai-review-gate {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-left: 10px;
+}
+
 .ai-review-desc {
   color: var(--text-muted);
   font-size: 12.5px;
@@ -981,7 +1035,7 @@ button {
 
     /* CodeMirrorが残した元のtextareaがページを広げるのを防ぐ */
   .CodeMirror + textarea,
-  .problem-layout textarea {
+  #jsInput {
     display: none;
   }
 

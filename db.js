@@ -57,14 +57,46 @@ async function initDb() {
       UNIQUE(user_id, used_on)
     )
   `);
+
+  // プロンプト練習の履歴。ACとは別に「指示を書いた回数」を残す。
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS prompt_reviews (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL,
+      problem_id INTEGER NOT NULL,
+      language TEXT,
+      axis TEXT,
+      code TEXT,
+      user_prompt TEXT,
+      weakness TEXT,
+      prompt_gap TEXT,
+      prompt_hint TEXT,
+      explanation TEXT,
+      improved_code TEXT,
+      revealed_code INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS prompt_reviews_user_created_idx
+    ON prompt_reviews (user_id, created_at DESC)
+  `);
+}
+
+// 日付は日本時間(JST)で判定する。
+// toISOString() はUTCを返すため、そのまま使うと日本の朝9時に日付が変わってしまう。
+const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+function jstDateStr(ms) {
+  return new Date(ms + JST_OFFSET_MS).toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
 function todayStr() {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return jstDateStr(Date.now());
 }
 
 function yesterdayStr() {
-  return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return jstDateStr(Date.now() - 24 * 60 * 60 * 1000);
 }
 
 // Googleログインのたびに呼ばれる。初回はユーザーを作成し、
@@ -229,6 +261,60 @@ async function incrementAiUsage(userId) {
   return rows[0].count;
 }
 
+async function savePromptReview({
+  userId,
+  problemId,
+  language,
+  axis,
+  code,
+  userPrompt,
+  weakness,
+  promptGap,
+  promptHint,
+  explanation,
+  improvedCode,
+  revealedCode
+}) {
+  const { rows } = await pool.query(
+    `INSERT INTO prompt_reviews (
+      user_id, problem_id, language, axis, code, user_prompt,
+      weakness, prompt_gap, prompt_hint, explanation, improved_code, revealed_code
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+    RETURNING id, to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at`,
+    [
+      userId,
+      problemId,
+      language || null,
+      axis || null,
+      code || '',
+      userPrompt || '',
+      weakness || '',
+      promptGap || '',
+      promptHint || '',
+      explanation || '',
+      improvedCode || '',
+      revealedCode ? 1 : 0
+    ]
+  );
+  return rows[0];
+}
+
+async function getPromptReviewHistory(userId, limit = 50) {
+  const { rows } = await pool.query(
+    `SELECT id, problem_id, language, axis,
+            left(user_prompt, 200) AS user_prompt,
+            left(weakness, 200) AS weakness,
+            revealed_code,
+            to_char(created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at
+     FROM prompt_reviews
+     WHERE user_id = $1
+     ORDER BY created_at DESC
+     LIMIT $2`,
+    [userId, limit]
+  );
+  return rows;
+}
+
 module.exports = {
   pool,
   initDb,
@@ -245,5 +331,7 @@ module.exports = {
   grantEntitlement,
   revokeEntitlement,
   getAiUsageToday,
-  incrementAiUsage
+  incrementAiUsage,
+  savePromptReview,
+  getPromptReviewHistory
 };

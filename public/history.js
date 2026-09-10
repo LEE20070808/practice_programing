@@ -45,8 +45,14 @@
     `;
   }
 
-  function renderHistory(history) {
-    const itemsHtml = history.map((entry) => {
+  const AXIS_LABEL = {
+    readable: '読みやすさ',
+    robust: '壊れにくさ',
+    specific: '指示の具体性'
+  };
+
+  function renderHistory(history, promptHistory) {
+    const solvedHtml = history.map((entry) => {
       const problem = PROBLEMS.find((p) => p.id === entry.problem_id);
       if (!problem) return '';
       return `
@@ -60,7 +66,33 @@
       `;
     }).join('');
 
-    area.innerHTML = `<div class="history-list">${itemsHtml}</div>`;
+    const promptHtml = (promptHistory || []).map((entry) => {
+      const problem = PROBLEMS.find((p) => p.id === entry.problem_id);
+      const title = problem ? problem.title : `問題 ${entry.problem_id}`;
+      const axis = AXIS_LABEL[entry.axis] || entry.axis || '';
+      return `
+        <a class="history-item" href="problem-detail.html?id=${entry.problem_id}">
+          <div class="history-item-main">
+            <span class="badge badge-tag">${axis}</span>
+            <h3>${title}</h3>
+          </div>
+          <span class="history-item-date">${formatDate(entry.created_at)}</span>
+        </a>
+      `;
+    }).join('');
+
+    const solvedBlock = solvedHtml
+      ? `<h2 class="subheading">正解した問題</h2><div class="history-list">${solvedHtml}</div>`
+      : `<h2 class="subheading">正解した問題</h2><p class="empty-sub">まだありません。</p>`;
+    const promptBlock = promptHtml
+      ? `<h2 class="subheading" style="margin-top:28px;">プロンプト練習</h2><div class="history-list">${promptHtml}</div>`
+      : `<h2 class="subheading" style="margin-top:28px;">プロンプト練習</h2><p class="empty-sub">まだレビューしていません。</p>`;
+
+    if (!solvedHtml && !promptHtml) {
+      renderEmpty();
+      return;
+    }
+    area.innerHTML = solvedBlock + promptBlock;
   }
 
   fetch('/api/me', { credentials: 'include' })
@@ -70,16 +102,12 @@
         renderLoggedOut();
         return;
       }
-      return fetch('/api/history', { credentials: 'include' })
-        .then((r) => r.json())
-        .then((data) => {
-          const history = data.history || [];
-          if (history.length === 0) {
-            renderEmpty();
-          } else {
-            renderHistory(history);
-          }
-        });
+      return Promise.all([
+        fetch('/api/history', { credentials: 'include' }).then((r) => r.json()),
+        fetch('/api/prompt-history', { credentials: 'include' }).then((r) => r.json())
+      ]).then(([solvedData, promptData]) => {
+        renderHistory(solvedData.history || [], promptData.history || []);
+      });
     })
     .catch(() => renderEmpty());
 })();

@@ -107,7 +107,8 @@ app.get('/api/me', async (req, res) => {
     aiReview: {
       usedToday,
       dailyLimit: tier.dailyLimit,
-      remaining: Math.max(0, tier.dailyLimit - usedToday)
+      remaining: Math.max(0, tier.dailyLimit - usedToday),
+      canRevealCode: !!tier.canRevealCode
     }
   });
 });
@@ -126,20 +127,24 @@ const aiReviewBurstLimiter = rateLimit({
 // 将来プランを売り始めたら、db.grantEntitlement(userId, 'ai:standard') を
 // 呼ぶだけでそのユーザーが standard に上がる。
 const AI_TIERS = {
+  // 客ゼロ期間は全員この枠。課金UIは出さない。
   free: {
     model: 'claude-sonnet-5',
-    dailyLimit: 30,
-    maxTokens: 1024
+    dailyLimit: 15,
+    maxTokens: 2048,
+    canRevealCode: true
   },
   standard: {
     model: 'claude-sonnet-5',
-    dailyLimit: 200,
-    maxTokens: 2048
+    dailyLimit: 30,
+    maxTokens: 2048,
+    canRevealCode: true
   },
   pro: {
     model: 'claude-opus-5',
-    dailyLimit: 200,
-    maxTokens: 2048
+    dailyLimit: 30,
+    maxTokens: 2048,
+    canRevealCode: true
   }
 };
 
@@ -192,7 +197,13 @@ app.post('/api/onboarding/complete', async (req, res) => {
   res.json({ ok: true });
 });
 
-// 書いたコードをClaudeに送り、改善版のコードとプロンプトのヒントをもらう
+const REVIEW_AXES = {
+  readable: '読みやすさ（名前、分割、重複、意図が追えるか）',
+  robust: '壊れにくさ（入力検証、エラー、想定外の操作）',
+  specific: '指示の具体性（言語・制約・入出力・やってはいけないことが書けているか）'
+};
+
+// 書いたコードと、学習者の次の指示文をClaudeに送り、弱点とプロンプトの穴を返す
 app.post('/api/ai-review', aiReviewBurstLimiter, async (req, res) => {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'ログインが必要です' });
@@ -201,13 +212,11 @@ app.post('/api/ai-review', aiReviewBurstLimiter, async (req, res) => {
     return res.status(500).json({ error: 'サーバー側でAI機能が設定されていません（管理者に確認してください）' });
   }
 
-  const { problemId, code, language, title } = req.body;
+  const { problemId, code, language, title, userPrompt, axis, revealCode } = req.body;
   if (!problemId || typeof code !== 'string') {
     return res.status(400).json({ error: 'problemId と code が必要です' });
   }
 
-  // このユーザーのプランを調べ、今日の使用回数が上限に達していないか確認する。
-  // カウントはDBに持っているので、pm2を再起動しても消えない。
   const tier = await resolveAiTier(req.session.userId);
   const usedToday = await db.getAiUsageToday(req.session.userId);
   if (usedToday >= tier.dailyLimit) {
@@ -220,26 +229,40 @@ app.post('/api/ai-review', aiReviewBurstLimiter, async (req, res) => {
   }
 
   const trimmedCode = code.slice(0, 4000);
+  const trimmedPrompt = typeof userPrompt === 'string' ? userPrompt.slice(0, 2000) : '';
   const safeTitle = String(title || '').slice(0, 100);
+  const axisKey = REVIEW_AXES[axis] ? axis : 'readable';
+  const axisLabel = REVIEW_AXES[axisKey];
   const languageLabel = language === 'python' ? 'Python' : language === 'go' ? 'Go' : 'JavaScript';
+  // 公開初期は改善コードも無料で返す。課金を始めるまで reveal 条件は使わない。
+  const wantCode = true;
 
   const prompt = `あなたはプログラミング学習サイト「CodeDrill」のAIレビュアーです。
-このサイトの目的は、AIを使ってコードを書く際に「良いプロンプト（指示文）の書き方」を身につけてもらうことです。
+目的は「コードの正解」を教えることではなく、学習者がAIへ出す指示文（プロンプト）を良くすることです。
+評価軸は1つだけです: ${axisLabel}
+言語は必ず ${languageLabel} のまま扱ってください。他言語に書き換えないでください。
 
-以下は、学習者が書いた${languageLabel}のコードです（問題: 「${safeTitle || `問題ID ${problemId}`}」）。
-このコードの言語は必ず ${languageLabel} です。改善案も必ず ${languageLabel} のまま書いてください。他の言語に書き換えないでください。
+問題タイトル: ${safeTitle || `問題ID ${problemId}`}
 
+学習者が貼ったコード:
 ---
 ${trimmedCode}
 ---
 
-次の3つを、日本語で、必ず次のJSON形式のみで出力してください（前後に説明文や\`\`\`は付けないでください）:
+学習者が「次にAIへ出したい」と思っている指示文（空の場合もある）:
+---
+${trimmedPrompt || '（未入力）'}
+---
 
+次のJSON形式のみで日本語出力してください。前後に説明文や\`\`\`は付けないでください。
 {
-  "improvedCode": "${languageLabel}で、より良い書き方に改善したコード全体（文字列。改行は\\nで表現）",
-  "promptHint": "この改善されたコードをAIに書いてもらうには、どんなプロンプトを書くと良いか、具体例を1つ",
-  "explanation": "元のコードと比べて何がどう改善されたのか、簡潔な説明（2〜3文）"
-}`;
+  "weakness": "この評価軸におけるコードの弱点を1つ。2文以内",
+  "promptGap": "今の指示文に足りない点を1つ。未入力なら、この軸で最低限書くべき要素を1つ",
+  "promptHint": "この軸で改善するためにAIへ出すべきプロンプト例を1つ（完成文）",
+  "explanation": "弱点と指示の穴の関係を2文以内",
+  "improvedCode": ${wantCode ? `"${languageLabel}の改善コード全体。改行は\\n"` : '""'}
+}
+improvedCode は ${wantCode ? '必ずコード全体を入れる' : '必ず空文字にする'}。`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -266,7 +289,6 @@ ${trimmedCode}
     const textBlock = (data.content || []).find((c) => c.type === 'text');
     const rawText = textBlock ? textBlock.text : '';
 
-        // モデルが ```json ... ``` で囲んで返してくることがあるので、その場合は剥がす
     const cleanedText = rawText
       .replace(/^\s*```(?:json)?\s*/i, '')
       .replace(/\s*```\s*$/, '')
@@ -276,14 +298,45 @@ ${trimmedCode}
     try {
       parsed = JSON.parse(cleanedText);
     } catch (e) {
-      parsed = { improvedCode: '', promptHint: '', explanation: rawText };
+      parsed = {
+        weakness: '',
+        promptGap: '',
+        promptHint: '',
+        explanation: rawText,
+        improvedCode: ''
+      };
     }
 
-    // 呼び出しが成功したときだけ回数を消費する（失敗した分は課金されないため）
+    if (!wantCode) {
+      parsed.improvedCode = '';
+    }
+
     const newCount = await db.incrementAiUsage(req.session.userId);
 
+    await db.savePromptReview({
+      userId: req.session.userId,
+      problemId: Number(problemId),
+      language: languageLabel,
+      axis: axisKey,
+      code: trimmedCode,
+      userPrompt: trimmedPrompt,
+      weakness: parsed.weakness || '',
+      promptGap: parsed.promptGap || '',
+      promptHint: parsed.promptHint || '',
+      explanation: parsed.explanation || '',
+      improvedCode: parsed.improvedCode || '',
+      revealedCode: wantCode
+    });
+
     res.json({
-      ...parsed,
+      weakness: parsed.weakness || '',
+      promptGap: parsed.promptGap || '',
+      promptHint: parsed.promptHint || '',
+      explanation: parsed.explanation || '',
+      improvedCode: parsed.improvedCode || '',
+      axis: axisKey,
+      canRevealCode: !!tier.canRevealCode,
+      codeLocked: !wantCode,
       plan: tier.name,
       usedToday: newCount,
       dailyLimit: tier.dailyLimit,
@@ -293,6 +346,13 @@ ${trimmedCode}
     console.error('AIレビューエラー:', err);
     res.status(500).json({ error: 'AIレビュー中にエラーが発生しました' });
   }
+});
+
+app.get('/api/prompt-history', async (req, res) => {
+  if (!req.session.userId) {
+    return res.json({ history: [] });
+  }
+  res.json({ history: await db.getPromptReviewHistory(req.session.userId) });
 });
 
 // ログアウト
